@@ -1,0 +1,45 @@
+.DS_Store
+DerivedData/
+build/
+*.xcodeproj/project.xcworkspace/xcuserdata/
+*.xcworkspace/xcuserdata/
+*.xcuserstate
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+.pub/
+.idea/
+.metadata
+coverage/
+
+# Python/backend local state
+__pycache__/
+.pycache/
+*.py[cod]
+*.pyc.*
+.venv/
+*.egg-info/
+.env
+!.env.example
+*.db
+
+# Local mobile service credentials/config generated per environment
+android/app/google-services.json
+ios/Runner/GoogleService-Info.plist
+
+# Local logs, smoke-test output, and Codex scratch files
+*.log
+*.out
+*.err
+.codex_*
+.codex_backup/
+.codex_runtime/
+tmp/
+visual-v57-check/
+tmp_shared_prefs_snapshot.json
+test_auth_*.txt
+*.bak
+
+# Large generated design audit screenshots
+Docs/HuashuDesign/**/screenshots/

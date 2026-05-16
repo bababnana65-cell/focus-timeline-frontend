@@ -1,0 +1,69 @@
+{
+  "name": "Event Timeline App Visual Redesign - V33 Timeline Tab v59",
+  "date": "2026-05-02",
+  "basedOn": "v58 Dial Tab Icon",
+  "note": "This is a Figma reconstruction handoff file, not a native .fig source. This version only changes the second bottom tab back to the v33 clock icon with the visible label.",
+  "frameSize": {
+    "width": 390,
+    "height": 844
+  },
+  "bottomTimelineTab": {
+    "version": "v59",
+    "reference": "v33 timeline-chevron-original",
+    "icon": "clock",
+    "symbol": "<use href=\"#clock\" />",
+    "visibleLabel": "时间轴",
+    "className": "timeline-v33-tab",
+    "wrapSize": {
+      "width": "54px",
+      "height": "34px"
+    },
+    "iconSize": {
+      "width": "20px",
+      "height": "20px"
+    },
+    "selectedState": {
+      "background": "global .nav.active .wrap background, theme-aware",
+      "iconColor": "theme selected color",
+      "textColor": "var(--ink)"
+    },
+    "unselectedState": {
+      "background": "none",
+      "iconColor": "var(--muted)",
+      "textColor": "var(--muted)"
+    },
+    "businessSemantics": "unchanged second bottom tab route: 时间轴"
+  },
+  "unchangedFromV58": [
+    "all screens",
+    "recommendation cards",
+    "following cards",
+    "timeline rail and node cards",
+    "timeline context row",
+    "preparing page status tags",
+    "new timeline flow",
+    "login and limit prompts",
+    "toast state"
+  ],
+  "frames": [
+    "recommend-hot",
+    "recommend-possible",
+    "recommend-random",
+    "recommend-history",
+    "my-list",
+    "my-unread",
+    "my-current",
+    "my-empty",
+    "timeline-normal",
+    "timeline-menu",
+    "timeline-preparing",
+    "timeline-failed",
+    "timeline-empty",
+    "create-input",
+    "create-confirm",
+    "login",
+    "limit",
+    "toast",
+    "components"
+  ]
+}

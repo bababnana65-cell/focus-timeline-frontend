@@ -1,0 +1,1752 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>事件时间轴 App 全新视觉设计 · 无黄色底色</title>
+  <style>
+    :root {
+      --app-canvas: #f7fbff;
+      --app-canvas-cool: #f3fbf8;
+      --app-surface: #ffffff;
+      --app-ink: #17213a;
+      --app-muted: #63708a;
+      --app-soft: #eef3f7;
+      --app-line: #e2e8ef;
+      --app-blue: #4b8dff;
+      --app-blue-deep: #245bd8;
+      --app-mint: #79dfbd;
+      --app-coral: #ff7a66;
+      --app-lavender: #cfc7ff;
+      --app-lilac: #d8cdfd;
+      --app-danger: #e5484d;
+      --app-success: #1d9a6c;
+      --shadow-soft: 0 10px 28px rgba(31, 48, 74, 0.08);
+      --font: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+        "Segoe UI", "PingFang SC", "Microsoft YaHei UI", "Microsoft YaHei", sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+
+    html {
+      background: #edf3f7;
+      color: var(--app-ink);
+      font-family: var(--font);
+      letter-spacing: 0;
+    }
+
+    body {
+      margin: 0;
+      min-width: 320px;
+    }
+
+    button,
+    input {
+      font: inherit;
+    }
+
+    .icon {
+      width: 20px;
+      height: 20px;
+      stroke: currentColor;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      fill: none;
+      flex: 0 0 auto;
+    }
+
+    .studio-hero {
+      padding: 42px clamp(18px, 4vw, 56px) 28px;
+      background:
+        radial-gradient(circle at 16% 18%, rgba(121, 223, 189, 0.34), transparent 27%),
+        radial-gradient(circle at 92% 8%, rgba(207, 199, 255, 0.46), transparent 24%),
+        linear-gradient(130deg, #ffffff 0%, #f6fbff 48%, #eef7ff 100%);
+      border-bottom: 1px solid rgba(23, 33, 58, 0.08);
+    }
+
+    .studio-hero .kicker {
+      color: var(--app-blue-deep);
+      font-size: 13px;
+      font-weight: 800;
+      margin-bottom: 10px;
+    }
+
+    .studio-hero h1 {
+      font-size: clamp(32px, 5vw, 56px);
+      line-height: 1.04;
+      margin: 0;
+      max-width: 920px;
+      text-wrap: balance;
+    }
+
+    .studio-hero p {
+      color: var(--app-muted);
+      font-size: 16px;
+      line-height: 1.7;
+      margin: 18px 0 0;
+      max-width: 840px;
+    }
+
+    .direction-strip {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(220px, 1fr));
+      gap: 14px;
+      margin-top: 28px;
+      max-width: 1080px;
+    }
+
+    .direction {
+      background: rgba(255, 255, 255, 0.72);
+      border: 1px solid rgba(23, 33, 58, 0.08);
+      border-radius: 8px;
+      padding: 16px;
+      box-shadow: 0 12px 24px rgba(45, 55, 72, 0.06);
+    }
+
+    .direction strong {
+      display: block;
+      font-size: 15px;
+      margin-bottom: 8px;
+    }
+
+    .direction span {
+      color: var(--app-muted);
+      display: block;
+      font-size: 13px;
+      line-height: 1.55;
+    }
+
+    .swatches {
+      display: flex;
+      gap: 6px;
+      margin-top: 12px;
+    }
+
+    .swatches i {
+      border: 1px solid rgba(23, 33, 58, 0.08);
+      border-radius: 999px;
+      display: block;
+      height: 18px;
+      width: 32px;
+    }
+
+    main {
+      padding: 34px clamp(14px, 3.4vw, 46px) 68px;
+    }
+
+    .board-section {
+      margin: 0 auto 42px;
+      max-width: 1520px;
+    }
+
+    .section-head {
+      align-items: end;
+      display: flex;
+      gap: 18px;
+      justify-content: space-between;
+      margin-bottom: 18px;
+    }
+
+    .section-head h2 {
+      font-size: 24px;
+      line-height: 1.2;
+      margin: 0;
+    }
+
+    .section-head p {
+      color: var(--app-muted);
+      font-size: 14px;
+      line-height: 1.6;
+      margin: 0;
+      max-width: 620px;
+    }
+
+    .frame-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(390px, 1fr));
+      gap: 24px;
+      align-items: start;
+    }
+
+    .frame-card {
+      background: rgba(255, 255, 255, 0.66);
+      border: 1px solid rgba(23, 33, 58, 0.08);
+      border-radius: 12px;
+      padding: 16px 14px 18px;
+      box-shadow: 0 16px 40px rgba(46, 62, 87, 0.06);
+    }
+
+    .frame-card > h3 {
+      font-size: 15px;
+      margin: 0 4px 12px;
+    }
+
+    .frame-note {
+      color: var(--app-muted);
+      font-size: 12px;
+      line-height: 1.45;
+      margin: -5px 4px 12px;
+    }
+
+    .phone {
+      background: #111827;
+      border: 1px solid rgba(13, 23, 42, 0.18);
+      border-radius: 28px;
+      box-shadow: 0 26px 70px rgba(15, 23, 42, 0.18);
+      height: 844px;
+      margin: 0 auto;
+      overflow: hidden;
+      position: relative;
+      width: 390px;
+    }
+
+    .phone.small { width: 360px; }
+    .phone.large { width: 430px; }
+
+    .status-bar {
+      align-items: center;
+      background: var(--app-canvas);
+      color: var(--app-ink);
+      display: flex;
+      font-size: 12px;
+      font-weight: 700;
+      height: 30px;
+      justify-content: space-between;
+      padding: 0 22px;
+    }
+
+    .status-icons {
+      align-items: center;
+      display: flex;
+      gap: 5px;
+    }
+
+    .signal {
+      background: currentColor;
+      border-radius: 1px;
+      display: inline-block;
+      height: 8px;
+      width: 14px;
+      clip-path: polygon(0 62%, 25% 62%, 25% 45%, 50% 45%, 50% 28%, 75% 28%, 75% 12%, 100% 12%, 100% 100%, 0 100%);
+    }
+
+    .battery {
+      border: 1.7px solid currentColor;
+      border-radius: 4px;
+      height: 10px;
+      position: relative;
+      width: 20px;
+    }
+
+    .battery::before {
+      background: currentColor;
+      border-radius: 1px;
+      content: "";
+      height: 5px;
+      left: 2px;
+      position: absolute;
+      top: 1.5px;
+      width: 13px;
+    }
+
+    .battery::after {
+      background: currentColor;
+      border-radius: 1px;
+      content: "";
+      height: 4px;
+      position: absolute;
+      right: -4px;
+      top: 2px;
+      width: 2px;
+    }
+
+    .app {
+      background: var(--app-canvas);
+      display: flex;
+      flex-direction: column;
+      height: calc(100% - 30px);
+      overflow: hidden;
+      position: relative;
+    }
+
+    .app.cool {
+      background: var(--app-canvas-cool);
+    }
+
+    .topbar {
+      align-items: center;
+      display: grid;
+      grid-template-columns: 48px 1fr 48px;
+      gap: 8px;
+      min-height: 70px;
+      padding: 10px 16px 6px;
+    }
+
+    .topbar h1 {
+      font-size: 22px;
+      font-weight: 800;
+      line-height: 1.18;
+      margin: 0;
+      text-align: center;
+    }
+
+    .round-btn,
+    .mini-btn {
+      align-items: center;
+      background: rgba(255, 255, 255, 0.84);
+      border: 1px solid rgba(23, 33, 58, 0.08);
+      border-radius: 999px;
+      color: var(--app-ink);
+      display: inline-flex;
+      height: 44px;
+      justify-content: center;
+      min-width: 44px;
+      padding: 0;
+      position: relative;
+      box-shadow: 0 8px 18px rgba(41, 56, 78, 0.05);
+    }
+
+    .round-btn.primary {
+      background: var(--app-blue);
+      border-color: transparent;
+      color: #fff;
+    }
+
+    .round-btn.dark {
+      background: var(--app-ink);
+      border-color: transparent;
+      color: #fff;
+    }
+
+    .mini-btn {
+      height: 38px;
+      min-width: 38px;
+    }
+
+    .content {
+      flex: 1;
+      overflow: hidden;
+      padding: 0 16px 100px;
+      position: relative;
+    }
+
+    .scroll {
+      height: 100%;
+      overflow: hidden;
+      padding-bottom: 8px;
+    }
+
+    .segment {
+      align-items: center;
+      background: rgba(255, 255, 255, 0.75);
+      border: 1px solid rgba(23, 33, 58, 0.08);
+      border-radius: 18px;
+      display: grid;
+      gap: 4px;
+      grid-template-columns: repeat(4, 1fr);
+      margin: 4px 0 14px;
+      padding: 4px;
+    }
+
+    .segment span {
+      align-items: center;
+      border-radius: 14px;
+      color: var(--app-muted);
+      display: flex;
+      font-size: 13px;
+      font-weight: 800;
+      height: 34px;
+      justify-content: center;
+      white-space: nowrap;
+    }
+
+    .segment .active {
+      background: var(--app-ink);
+      color: #fff;
+      box-shadow: inset 0 -2px 0 rgba(255, 255, 255, 0.12);
+    }
+
+    .pull-strip {
+      align-items: center;
+      background: rgba(255, 255, 255, 0.78);
+      border: 1px solid rgba(75, 141, 255, 0.18);
+      border-radius: 999px;
+      color: var(--app-blue-deep);
+      display: flex;
+      font-size: 13px;
+      font-weight: 800;
+      gap: 8px;
+      justify-content: center;
+      margin: 0 auto 12px;
+      min-height: 36px;
+      width: max-content;
+      padding: 0 14px;
+    }
+
+    .loader {
+      animation: spin 0.95s linear infinite;
+      border: 2px solid rgba(75, 141, 255, 0.16);
+      border-top-color: var(--app-blue);
+      border-radius: 999px;
+      height: 16px;
+      width: 16px;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .rec-card,
+    .topic-card,
+    .timeline-item,
+    .empty-panel,
+    .topic-hero,
+    .sheet-card,
+    .login-card {
+      background: rgba(255, 255, 255, 0.94);
+      border: 1px solid rgba(23, 33, 58, 0.08);
+      border-radius: 8px;
+      box-shadow: var(--shadow-soft);
+    }
+
+    .rec-card {
+      display: grid;
+      gap: 12px;
+      grid-template-columns: 1fr auto;
+      margin-bottom: 12px;
+      min-height: 132px;
+      padding: 15px;
+      position: relative;
+    }
+
+    .rec-card::before {
+      background: linear-gradient(180deg, var(--app-mint), var(--app-lavender));
+      border-radius: 999px;
+      content: "";
+      height: 50px;
+      left: -3px;
+      position: absolute;
+      top: 18px;
+      width: 6px;
+    }
+
+    .rec-card.hot::before {
+      background: linear-gradient(180deg, var(--app-coral), var(--app-lavender));
+    }
+
+    .rec-main {
+      min-width: 0;
+    }
+
+    .chip-row {
+      align-items: center;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 8px;
+    }
+
+    .chip {
+      align-items: center;
+      border-radius: 999px;
+      display: inline-flex;
+      font-size: 11px;
+      font-weight: 800;
+      gap: 4px;
+      min-height: 24px;
+      padding: 0 9px;
+      white-space: nowrap;
+    }
+
+    .chip.blue { background: #eaf2ff; color: var(--app-blue-deep); }
+    .chip.mint { background: #e7fbf2; color: #08744e; }
+    .chip.coral { background: #fff0eb; color: #b73b2f; }
+    .chip.lavender-soft { background: #f0edff; color: #5b45b7; }
+    .chip.lilac { background: #f1edff; color: #5b45b7; }
+    .chip.gray { background: #eef3f7; color: var(--app-muted); }
+
+    .card-title {
+      color: var(--app-ink);
+      font-size: 16px;
+      font-weight: 800;
+      line-height: 1.32;
+      margin: 0 0 6px;
+      text-wrap: pretty;
+    }
+
+    .card-copy {
+      color: var(--app-muted);
+      font-size: 13.5px;
+      font-weight: 550;
+      line-height: 1.52;
+      margin: 0;
+      text-wrap: pretty;
+    }
+
+    .rec-actions {
+      align-items: end;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      justify-content: space-between;
+      min-width: 74px;
+    }
+
+    .text-btn,
+    .solid-btn,
+    .ghost-btn {
+      align-items: center;
+      border: 0;
+      border-radius: 999px;
+      display: inline-flex;
+      font-size: 12px;
+      font-weight: 900;
+      gap: 5px;
+      justify-content: center;
+      min-height: 36px;
+      min-width: 72px;
+      padding: 0 12px;
+      white-space: nowrap;
+    }
+
+    .solid-btn {
+      background: var(--app-ink);
+      color: #fff;
+    }
+
+    .solid-btn.blue {
+      background: var(--app-blue);
+    }
+
+    .solid-btn.loading {
+      background: #c8d3df;
+      color: #fff;
+    }
+
+    .ghost-btn {
+      background: #f8fafc;
+      border: 1px solid rgba(23, 33, 58, 0.08);
+      color: var(--app-ink);
+    }
+
+    .text-btn {
+      background: transparent;
+      color: var(--app-blue-deep);
+      min-width: auto;
+      padding: 0 4px;
+    }
+
+    .topic-card {
+      display: grid;
+      gap: 12px;
+      grid-template-columns: auto 1fr auto;
+      margin-bottom: 11px;
+      min-height: 92px;
+      padding: 14px;
+      position: relative;
+    }
+
+    .topic-card.unread {
+      background: linear-gradient(135deg, #f3fbff 0%, #ffffff 58%, #edf5ff 100%);
+      border-color: rgba(255, 122, 102, 0.42);
+    }
+
+    .topic-card.current {
+      border-color: rgba(75, 141, 255, 0.54);
+      box-shadow: 0 12px 30px rgba(75, 141, 255, 0.12);
+    }
+
+    .topic-card.preparing {
+      background: linear-gradient(135deg, #ffffff 0%, #ecfbf4 100%);
+    }
+
+    .topic-icon {
+      align-items: center;
+      background: #eef3f7;
+      border-radius: 8px;
+      color: var(--app-ink);
+      display: flex;
+      height: 38px;
+      justify-content: center;
+      width: 38px;
+    }
+
+    .topic-icon.pin { background: #edf5ff; color: #245bd8; }
+    .topic-icon.mint { background: #e8fbf3; color: #08744e; }
+    .topic-icon.blue { background: #eaf2ff; color: var(--app-blue-deep); }
+
+    .topic-body {
+      min-width: 0;
+    }
+
+    .topic-meta {
+      color: var(--app-muted);
+      font-size: 12px;
+      font-weight: 800;
+      margin-bottom: 4px;
+    }
+
+    .latest {
+      background: #eef7ff;
+      border-radius: 6px;
+      color: #245bd8;
+      display: inline;
+      padding: 1px 5px;
+    }
+
+    .dot {
+      background: var(--app-danger);
+      border: 2px solid #fff;
+      border-radius: 999px;
+      height: 10px;
+      position: absolute;
+      right: 13px;
+      top: 12px;
+      width: 10px;
+    }
+
+    .topic-side {
+      align-items: end;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      justify-content: center;
+    }
+
+    .date-badge {
+      color: var(--app-muted);
+      font-size: 12px;
+      font-weight: 900;
+      white-space: nowrap;
+    }
+
+    .progress-line {
+      background: #dcefe8;
+      border-radius: 999px;
+      height: 6px;
+      margin-top: 10px;
+      overflow: hidden;
+    }
+
+    .progress-line span {
+      background: linear-gradient(90deg, var(--app-mint), var(--app-blue));
+      border-radius: inherit;
+      display: block;
+      height: 100%;
+      width: 58%;
+    }
+
+    .bottom-nav {
+      align-items: center;
+      background: rgba(255, 255, 255, 0.94);
+      border-top: 1px solid rgba(23, 33, 58, 0.08);
+      bottom: 0;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      height: 76px;
+      left: 0;
+      padding: 6px 22px 10px;
+      position: absolute;
+      right: 0;
+    }
+
+    .nav-item {
+      align-items: center;
+      color: var(--app-muted);
+      display: flex;
+      flex-direction: column;
+      font-size: 11px;
+      font-weight: 800;
+      gap: 4px;
+      position: relative;
+    }
+
+    .nav-item .icon-wrap {
+      align-items: center;
+      border-radius: 999px;
+      display: flex;
+      height: 32px;
+      justify-content: center;
+      width: 48px;
+    }
+
+    .nav-item.active {
+      color: var(--app-ink);
+    }
+
+    .nav-item.active .icon-wrap {
+      background: #eaf2ff;
+      color: var(--app-blue-deep);
+    }
+
+    .nav-dot {
+      background: var(--app-danger);
+      border: 2px solid #fff;
+      border-radius: 999px;
+      height: 9px;
+      position: absolute;
+      right: 32%;
+      top: 2px;
+      width: 9px;
+    }
+
+    .empty-panel {
+      align-items: center;
+      display: flex;
+      flex-direction: column;
+      margin-top: 84px;
+      padding: 28px 22px;
+      text-align: center;
+    }
+
+    .empty-visual {
+      align-items: center;
+      background:
+        radial-gradient(circle at 35% 35%, var(--app-lavender), transparent 30%),
+        radial-gradient(circle at 74% 28%, var(--app-mint), transparent 34%),
+        #eef6ff;
+      border-radius: 999px;
+      color: var(--app-blue-deep);
+      display: flex;
+      height: 82px;
+      justify-content: center;
+      margin-bottom: 18px;
+      width: 82px;
+    }
+
+    .empty-panel h2 {
+      font-size: 19px;
+      margin: 0 0 8px;
+    }
+
+    .empty-panel p {
+      color: var(--app-muted);
+      font-size: 14px;
+      line-height: 1.55;
+      margin: 0 0 18px;
+    }
+
+    .topic-hero {
+      margin-bottom: 12px;
+      padding: 16px;
+    }
+
+    .hero-title-row {
+      align-items: start;
+      display: flex;
+      gap: 10px;
+      justify-content: space-between;
+    }
+
+    .topic-hero h2 {
+      font-size: 19px;
+      line-height: 1.2;
+      margin: 0 0 7px;
+      text-wrap: pretty;
+    }
+
+    .topic-hero p {
+      color: var(--app-muted);
+      font-size: 13.5px;
+      font-weight: 560;
+      line-height: 1.55;
+      margin: 0;
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 14px;
+    }
+
+    .hero-actions .solid-btn,
+    .hero-actions .ghost-btn {
+      min-height: 42px;
+      min-width: 0;
+      flex: 1;
+    }
+
+    .stat-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .stat {
+      background: rgba(255, 255, 255, 0.84);
+      border: 1px solid rgba(23, 33, 58, 0.08);
+      border-radius: 8px;
+      padding: 10px;
+      text-align: center;
+    }
+
+    .stat b {
+      display: block;
+      font-size: 19px;
+      line-height: 1;
+    }
+
+    .stat span {
+      color: var(--app-muted);
+      display: block;
+      font-size: 11px;
+      font-weight: 800;
+      margin-top: 5px;
+    }
+
+    .timeline-list {
+      position: relative;
+      padding-left: 62px;
+    }
+
+    .timeline-list::before {
+      background: linear-gradient(180deg, rgba(75, 141, 255, 0.12), rgba(255, 122, 102, 0.22));
+      border-radius: 999px;
+      bottom: 12px;
+      content: "";
+      left: 48px;
+      position: absolute;
+      top: 6px;
+      width: 2px;
+    }
+
+    .timeline-item {
+      margin-bottom: 11px;
+      min-height: 106px;
+      padding: 13px 40px 13px 14px;
+      position: relative;
+    }
+
+    .timeline-date {
+      color: var(--app-ink);
+      font-size: 12px;
+      font-weight: 900;
+      left: -62px;
+      line-height: 1.25;
+      position: absolute;
+      text-align: left;
+      top: 15px;
+      width: 50px;
+    }
+
+    .timeline-dot {
+      background: var(--app-lavender);
+      border: 3px solid var(--app-canvas);
+      border-radius: 999px;
+      height: 17px;
+      left: -23px;
+      position: absolute;
+      top: 16px;
+      width: 17px;
+      z-index: 1;
+    }
+
+    .timeline-item.major .timeline-dot {
+      background: var(--app-coral);
+    }
+
+    .timeline-item h3 {
+      font-size: 15.5px;
+      line-height: 1.35;
+      margin: 0 0 6px;
+      text-wrap: pretty;
+    }
+
+    .timeline-item p {
+      color: var(--app-muted);
+      font-size: 13px;
+      line-height: 1.48;
+      margin: 0;
+    }
+
+    .timeline-chevron {
+      align-items: center;
+      border: 1px solid rgba(23, 33, 58, 0.1);
+      border-radius: 999px;
+      color: var(--app-muted);
+      display: flex;
+      height: 28px;
+      justify-content: center;
+      position: absolute;
+      right: 10px;
+      top: 14px;
+      width: 28px;
+    }
+
+    .preparing-panel {
+      background: rgba(255, 255, 255, 0.78);
+      border: 1px dashed rgba(29, 154, 108, 0.38);
+      border-radius: 8px;
+      margin-top: 10px;
+      padding: 16px;
+    }
+
+    .prep-steps {
+      display: grid;
+      gap: 11px;
+      margin-top: 14px;
+    }
+
+    .prep-step {
+      align-items: center;
+      display: grid;
+      gap: 10px;
+      grid-template-columns: 28px 1fr auto;
+    }
+
+    .prep-index {
+      align-items: center;
+      background: #e8fbf3;
+      border-radius: 999px;
+      color: #08744e;
+      display: flex;
+      font-size: 12px;
+      font-weight: 900;
+      height: 28px;
+      justify-content: center;
+      width: 28px;
+    }
+
+    .prep-step strong {
+      display: block;
+      font-size: 14px;
+    }
+
+    .prep-step span {
+      color: var(--app-muted);
+      display: block;
+      font-size: 12px;
+      margin-top: 2px;
+    }
+
+    .prep-state {
+      color: var(--app-success);
+      font-size: 12px;
+      font-weight: 900;
+    }
+
+    .sheet-backdrop {
+      background: rgba(23, 33, 58, 0.48);
+      inset: 0;
+      position: absolute;
+      z-index: 4;
+    }
+
+    .bottom-sheet {
+      background: #fff;
+      border-radius: 28px 28px 0 0;
+      bottom: 0;
+      box-shadow: 0 -22px 55px rgba(23, 33, 58, 0.18);
+      left: 0;
+      padding: 16px 20px 24px;
+      position: absolute;
+      right: 0;
+      z-index: 5;
+    }
+
+    .grabber {
+      background: #dbe1e8;
+      border-radius: 999px;
+      height: 4px;
+      margin: 0 auto 20px;
+      width: 44px;
+    }
+
+    .bottom-sheet h2,
+    .login-card h2 {
+      font-size: 22px;
+      line-height: 1.18;
+      margin: 0 0 8px;
+    }
+
+    .bottom-sheet p,
+    .login-card p {
+      color: var(--app-muted);
+      font-size: 14px;
+      line-height: 1.56;
+      margin: 0 0 18px;
+    }
+
+    .input-box {
+      background: #fbfdff;
+      border: 1px solid var(--app-line);
+      border-radius: 16px;
+      display: flex;
+      gap: 10px;
+      min-height: 72px;
+      padding: 14px;
+      align-items: center;
+    }
+
+    .input-box label {
+      color: var(--app-muted);
+      display: block;
+      font-size: 13px;
+      font-weight: 900;
+      margin-bottom: 4px;
+    }
+
+    .fake-input {
+      color: var(--app-ink);
+      font-size: 16px;
+      font-weight: 800;
+    }
+
+    .wide-btn {
+      align-items: center;
+      border: 0;
+      border-radius: 8px;
+      display: flex;
+      font-weight: 900;
+      gap: 8px;
+      height: 48px;
+      justify-content: center;
+      margin-top: 14px;
+      width: 100%;
+    }
+
+    .wide-btn.dark {
+      background: var(--app-ink);
+      color: #fff;
+    }
+
+    .wide-btn.blue {
+      background: var(--app-blue);
+      color: #fff;
+    }
+
+    .definition-card {
+      background: #fff;
+      border: 1px solid rgba(23, 33, 58, 0.08);
+      border-radius: 8px;
+      box-shadow: var(--shadow-soft);
+      margin-top: 16px;
+      padding: 16px;
+    }
+
+    .definition-card h3 {
+      font-size: 20px;
+      line-height: 1.22;
+      margin: 0 0 8px;
+    }
+
+    .def-row {
+      align-items: center;
+      background: #f8fbfd;
+      border: 1px solid var(--app-line);
+      border-radius: 8px;
+      display: flex;
+      gap: 10px;
+      justify-content: space-between;
+      min-height: 48px;
+      margin: 14px 0;
+      padding: 0 12px;
+    }
+
+    .keyword-cloud {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 10px 0 12px;
+    }
+
+    .keyword {
+      align-items: center;
+      background: #f0edff;
+      border: 1px solid rgba(91, 69, 183, 0.16);
+      border-radius: 999px;
+      color: #5b45b7;
+      display: inline-flex;
+      font-size: 12px;
+      font-weight: 850;
+      min-height: 30px;
+      padding: 0 10px;
+    }
+
+    .keyword.core {
+      background: #eaf2ff;
+      color: var(--app-blue-deep);
+    }
+
+    .login-card {
+      margin: auto 16px 24px;
+      padding: 20px;
+      position: relative;
+      z-index: 2;
+    }
+
+    .phone-form {
+      display: grid;
+      gap: 10px;
+    }
+
+    .form-line {
+      align-items: center;
+      background: #fbfdff;
+      border: 1px solid var(--app-line);
+      border-radius: 14px;
+      display: flex;
+      gap: 10px;
+      min-height: 52px;
+      padding: 0 14px;
+    }
+
+    .form-line b {
+      font-size: 15px;
+    }
+
+    .code-boxes {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 9px;
+      margin: 12px 0 4px;
+    }
+
+    .code-box {
+      align-items: center;
+      background: #fbfdff;
+      border: 1px solid var(--app-line);
+      border-radius: 12px;
+      display: flex;
+      font-size: 20px;
+      font-weight: 900;
+      height: 48px;
+      justify-content: center;
+    }
+
+    .limit-dialog {
+      background: #fff;
+      border: 1px solid rgba(23, 33, 58, 0.08);
+      border-radius: 8px;
+      box-shadow: 0 28px 80px rgba(15, 23, 42, 0.24);
+      left: 22px;
+      padding: 18px;
+      position: absolute;
+      right: 22px;
+      top: 206px;
+      z-index: 6;
+    }
+
+    .limit-dialog h2 {
+      font-size: 20px;
+      margin: 0 0 8px;
+    }
+
+    .limit-dialog p {
+      color: var(--app-muted);
+      font-size: 14px;
+      line-height: 1.55;
+      margin: 0 0 16px;
+    }
+
+    .quota {
+      background: #eef7ff;
+      border: 1px solid rgba(91, 69, 183, 0.18);
+      border-radius: 8px;
+      display: flex;
+      justify-content: space-between;
+      margin: 14px 0;
+      padding: 12px;
+    }
+
+    .quota strong { font-size: 22px; }
+    .quota span {
+      color: #5b45b7;
+      font-size: 12px;
+      font-weight: 900;
+    }
+
+    .snackbar {
+      align-items: center;
+      background: var(--app-ink);
+      border-radius: 8px;
+      bottom: 88px;
+      box-shadow: 0 12px 32px rgba(15, 23, 42, 0.22);
+      color: #fff;
+      display: flex;
+      gap: 10px;
+      left: 16px;
+      min-height: 48px;
+      padding: 0 14px;
+      position: absolute;
+      right: 16px;
+      z-index: 7;
+    }
+
+    .snackbar strong {
+      font-size: 13px;
+      line-height: 1.35;
+    }
+
+    .spec-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 16px;
+    }
+
+    .spec-card {
+      background: rgba(255, 255, 255, 0.78);
+      border: 1px solid rgba(23, 33, 58, 0.08);
+      border-radius: 8px;
+      box-shadow: 0 14px 32px rgba(46, 62, 87, 0.06);
+      padding: 18px;
+    }
+
+    .spec-card h3 {
+      font-size: 16px;
+      margin: 0 0 12px;
+    }
+
+    .spec-card p,
+    .spec-card li {
+      color: var(--app-muted);
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .palette {
+      display: grid;
+      gap: 8px;
+    }
+
+    .color-row {
+      align-items: center;
+      display: grid;
+      gap: 10px;
+      grid-template-columns: 44px 1fr;
+    }
+
+    .color-row i {
+      border: 1px solid rgba(23, 33, 58, 0.08);
+      border-radius: 8px;
+      display: block;
+      height: 34px;
+    }
+
+    .color-row b {
+      display: block;
+      font-size: 13px;
+    }
+
+    .color-row span {
+      color: var(--app-muted);
+      display: block;
+      font-size: 12px;
+      margin-top: 2px;
+    }
+
+    .type-sample h1,
+    .type-sample h2,
+    .type-sample p {
+      margin: 0 0 10px;
+    }
+
+    .type-sample h1 { font-size: 22px; line-height: 1.18; }
+    .type-sample h2 { font-size: 16px; line-height: 1.3; }
+    .type-sample p {
+      color: var(--app-muted);
+      font-size: 14px;
+      line-height: 1.55;
+    }
+
+    .component-row {
+      align-items: center;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .compact-phone-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+    }
+
+    .crop-phone {
+      height: 520px;
+    }
+
+    @media (max-width: 880px) {
+      .direction-strip {
+        grid-template-columns: 1fr;
+      }
+
+      .section-head {
+        align-items: start;
+        flex-direction: column;
+      }
+
+      .frame-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .frame-card {
+        overflow-x: auto;
+      }
+    }
+  </style>
+</head>
+<body>
+  <svg aria-hidden="true" style="display:none">
+    <symbol id="i-search" viewBox="0 0 24 24"><path d="m21 21-4.3-4.3"/><circle cx="11" cy="11" r="7"/></symbol>
+    <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+    <symbol id="i-bookmark" viewBox="0 0 24 24"><path d="M6 4h12v16l-6-3.5L6 20z"/></symbol>
+    <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></symbol>
+    <symbol id="i-compass" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="m15.5 8.5-2 5-5 2 2-5z"/></symbol>
+    <symbol id="i-share" viewBox="0 0 24 24"><path d="M4 12v7h16v-7M12 15V3M8 7l4-4 4 4"/></symbol>
+    <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></symbol>
+    <symbol id="i-chevron" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></symbol>
+    <symbol id="i-pin" viewBox="0 0 24 24"><path d="M12 17v5M7 4h10l-2 6 3 4H6l3-4z"/></symbol>
+    <symbol id="i-spark" viewBox="0 0 24 24"><path d="M12 3l1.5 5.5L19 10l-5.5 1.5L12 17l-1.5-5.5L5 10l5.5-1.5zM19 15l.8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8zM5 4l.8 2.2L8 7l-2.2.8L5 10l-.8-2.2L2 7l2.2-.8z"/></symbol>
+    <symbol id="i-phone" viewBox="0 0 24 24"><rect x="7" y="2" width="10" height="20" rx="2"/><path d="M11 18h2"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 13 4 4L19 7"/></symbol>
+    <symbol id="i-warning" viewBox="0 0 24 24"><path d="M12 3 2.5 20h19z"/><path d="M12 9v4M12 17h.01"/></symbol>
+    <symbol id="i-refresh" viewBox="0 0 24 24"><path d="M20 12a8 8 0 0 1-14.5 4.7M4 12A8 8 0 0 1 18.5 7.3"/><path d="M20 5v5h-5M4 19v-5h5"/></symbol>
+    <symbol id="i-menu" viewBox="0 0 24 24"><path d="M5 12h.01M12 12h.01M19 12h.01"/></symbol>
+    <symbol id="i-x" viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"/></symbol>
+  </svg>
+
+  <header class="studio-hero">
+    <div class="kicker">Huashu Design · Mobile Prototype</div>
+    <h1>事件时间轴 App 全新视觉设计 · 无黄色底色</h1>
+    <p>
+      这份设计板以现有截图和冻结业务规则为结构依据，重做移动端视觉语言。目标是让“关注专题、查看时间线、发现推荐、新建专题”在轻快、明亮、可扫读的界面里成立，不改变接口、状态流和主流程。
+    </p>
+    <div class="direction-strip">
+      <div class="direction">
+        <strong>A. Breeze Ribbon · 无黄色底色</strong>
+        <span>用浅蓝白、薄荷、淡紫和珊瑚建立年轻感；卡片低半径，时间轴像轻量丝带。</span>
+        <div class="swatches"><i style="background:#f7fbff"></i><i style="background:#4b8dff"></i><i style="background:#79dfbd"></i><i style="background:#ff7a66"></i></div>
+      </div>
+      <div class="direction">
+        <strong>B. Soft Ledger · 备用</strong>
+        <span>更克制的信息表风格，适合后续做专业版，但会比当前目标更理性。</span>
+        <div class="swatches"><i style="background:#f8fbfd"></i><i style="background:#2f6df6"></i><i style="background:#a7e7d7"></i><i style="background:#cfc7ff"></i></div>
+      </div>
+      <div class="direction">
+        <strong>C. Pop Calendar · 备用</strong>
+        <span>更强的日历感和色块节奏，适合活动型产品，但容易压过长文本。</span>
+        <div class="swatches"><i style="background:#f7fbff"></i><i style="background:#ff7a66"></i><i style="background:#cfc7ff"></i><i style="background:#7bdff2"></i></div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="board-section">
+      <div class="section-head">
+        <h2>主流程高保真图</h2>
+        <p>所有手机稿按 390px 宽设计，组件尺寸按 360px 到 430px 伸缩。底部导航保留“我的关注 / 时间轴 / 推荐”三个入口。</p>
+      </div>
+
+      <div class="frame-grid">
+        <article class="frame-card">
+          <h3>推荐页 · 默认状态</h3>
+          <div class="phone">
+            <div class="status-bar"><span>9:41</span><span class="status-icons"><i class="signal"></i><i class="battery"></i></span></div>
+            <div class="app">
+              <div class="topbar">
+                <button class="round-btn" aria-label="搜索"><svg class="icon"><use href="#i-search"/></svg></button>
+                <h1>推荐</h1>
+                <button class="round-btn primary" aria-label="新建"><svg class="icon"><use href="#i-plus"/></svg></button>
+              </div>
+              <div class="content">
+                <div class="segment"><span class="active">你可能关心</span><span>当前热门</span><span>值得看看</span><span>历史</span></div>
+                <div class="scroll">
+                  <section class="rec-card hot">
+                    <div class="rec-main">
+                      <div class="chip-row"><span class="chip coral">热度上升</span><span class="chip lilac">重大节点</span></div>
+                      <h2 class="card-title">美伊战争总体进展</h2>
+                      <p class="card-copy">跟踪冲突升级、军事动作、外交回应和阶段变化。</p>
+                    </div>
+                    <div class="rec-actions"><button class="solid-btn">关注</button><button class="ghost-btn">查看 <svg class="icon" style="width:15px;height:15px"><use href="#i-chevron"/></svg></button></div>
+                  </section>
+                  <section class="rec-card">
+                    <div class="rec-main">
+                      <div class="chip-row"><span class="chip mint">你可能关心</span><span class="chip blue">政策</span></div>
+                      <h2 class="card-title">低空经济试点观察</h2>
+                      <p class="card-copy">关注试点城市、航线开放、监管口径与商业化进度。</p>
+                    </div>
+                    <div class="rec-actions"><button class="solid-btn blue">关注</button><button class="ghost-btn">查看 <svg class="icon" style="width:15px;height:15px"><use href="#i-chevron"/></svg></button></div>
+                  </section>
+                  <section class="rec-card">
+                    <div class="rec-main">
+                      <div class="chip-row"><span class="chip lilac">值得看看</span><span class="chip gray">科技</span></div>
+                      <h2 class="card-title">AI 大模型发布节奏</h2>
+                      <p class="card-copy">持续追踪模型发布、能力更新、生态合作和产品落地。</p>
+                    </div>
+                    <div class="rec-actions"><button class="solid-btn loading"><span class="loader" style="width:13px;height:13px;border-width:2px"></span></button><button class="ghost-btn">查看 <svg class="icon" style="width:15px;height:15px"><use href="#i-chevron"/></svg></button></div>
+                  </section>
+                  <section class="rec-card">
+                    <div class="rec-main">
+                      <div class="chip-row"><span class="chip blue">已关注</span><span class="chip gray">历史</span></div>
+                      <h2 class="card-title">霍尔木兹海峡航运情况</h2>
+                      <p class="card-copy">关注航运预警、保险和通行风险变化。</p>
+                    </div>
+                    <div class="rec-actions"><button class="ghost-btn"><svg class="icon" style="width:15px;height:15px"><use href="#i-check"/></svg> 已关注</button><button class="ghost-btn">查看</button></div>
+                  </section>
+                </div>
+              </div>
+              <nav class="bottom-nav">
+                <div class="nav-item"><span class="icon-wrap"><svg class="icon"><use href="#i-bookmark"/></svg></span>我的关注</div>
+                <div class="nav-item"><span class="icon-wrap"><svg class="icon"><use href="#i-clock"/></svg></span>时间轴</div>
+                <div class="nav-item active"><span class="icon-wrap"><svg class="icon"><use href="#i-compass"/></svg></span>推荐</div>
+              </nav>
+            </div>
+          </div>
+        </article>
+
+        <article class="frame-card">
+          <h3>推荐页 · 下拉刷新</h3>
+          <div class="phone">
+            <div class="status-bar"><span>9:41</span><span class="status-icons"><i class="signal"></i><i class="battery"></i></span></div>
+            <div class="app">
+              <div class="topbar">
+                <button class="round-btn" aria-label="搜索"><svg class="icon"><use href="#i-search"/></svg></button>
+                <h1>推荐</h1>
+                <button class="round-btn primary" aria-label="新建"><svg class="icon"><use href="#i-plus"/></svg></button>
+              </div>
+              <div class="content">
+                <div class="pull-strip"><span class="loader"></span>正在刷新推荐</div>
+                <div class="segment"><span>你可能关心</span><span class="active">当前热门</span><span>值得看看</span><span>历史</span></div>
+                <div class="scroll">
+                  <section class="rec-card hot">
+                    <div class="rec-main"><div class="chip-row"><span class="chip coral">当前热门</span><span class="chip lilac">关注上升</span></div><h2 class="card-title">美伊战争总体进展</h2><p class="card-copy">跟踪冲突升级、军事动作、外交回应和阶段变化。</p></div>
+                    <div class="rec-actions"><button class="ghost-btn"><svg class="icon" style="width:15px;height:15px"><use href="#i-check"/></svg> 已关注</button><button class="ghost-btn">查看</button></div>
+                  </section>
+                  <section class="rec-card hot">
+                    <div class="rec-main"><div class="chip-row"><span class="chip coral">当前热门</span></div><h2 class="card-title">霍尔木兹海峡航运情况</h2><p class="card-copy">关注航运预警、通行成本和风险变化。</p></div>
+                    <div class="rec-actions"><button class="solid-btn">关注</button><button class="ghost-btn">查看</button></div>
+                  </section>
+                  <section class="rec-card">
+                    <div class="rec-main"><div class="chip-row"><span class="chip mint">新推荐</span></div><h2 class="card-title">全球芯片出口规则更新</h2><p class="card-copy">整理政策变化、企业回应和供应链节点。</p></div>
+                    <div class="rec-actions"><button class="solid-btn blue">关注</button><button class="ghost-btn">查看</button></div>
+                  </section>
+                </div>
+              </div>
+              <nav class="bottom-nav"><div class="nav-item"><span class="icon-wrap"><svg class="icon"><use href="#i-bookmark"/></svg></span>我的关注</div><div class="nav-item"><span class="icon-wrap"><svg class="icon"><use href="#i-clock"/></svg></span>时间轴</div><div class="nav-item active"><span class="icon-wrap"><svg class="icon"><use href="#i-compass"/></svg></span>推荐</div></nav>
+            </div>
+          </div>
+        </article>
+
+        <article class="frame-card">
+          <h3>我的关注 · 普通状态</h3>
+          <div class="phone">
+            <div class="status-bar"><span>9:41</span><span class="status-icons"><i class="signal"></i><i class="battery"></i></span></div>
+            <div class="app cool">
+              <div class="topbar">
+                <button class="round-btn" aria-label="账号"><svg class="icon"><use href="#i-user"/></svg></button>
+                <h1>我的关注</h1>
+                <button class="round-btn" aria-label="新建"><svg class="icon"><use href="#i-plus"/></svg></button>
+              </div>
+              <div class="content">
+                <div class="scroll">
+                  <article class="topic-card current">
+                    <div class="topic-icon blue"><svg class="icon"><use href="#i-clock"/></svg></div>
+                    <div class="topic-body"><div class="topic-meta">正在查看 · 4 月25日</div><h2 class="card-title">美伊战争总体进展</h2><p class="card-copy">跟踪冲突升级、军事动作、外交回应和阶段变化。</p></div>
+                    <div class="topic-side"><span class="chip blue">正在查看</span><svg class="icon"><use href="#i-chevron"/></svg></div>
+                  </article>
+                  <article class="topic-card">
+                    <div class="topic-icon"><svg class="icon"><use href="#i-bookmark"/></svg></div>
+                    <div class="topic-body"><div class="topic-meta">4 月7日</div><h2 class="card-title">霍尔木兹海峡航运情况</h2><p class="card-copy">风险已开始传导到具体航运运营和成本。</p></div>
+                    <div class="topic-side"><svg class="icon"><use href="#i-chevron"/></svg></div>
+                  </article>
+                  <article class="topic-card">
+                    <div class="topic-icon"><svg class="icon"><use href="#i-bookmark"/></svg></div>
+                    <div class="topic-body"><div class="topic-meta">3 月26日</div><h2 class="card-title">01事件时间线</h2><p class="card-copy">聚焦关键节点、外部反馈与最新走向。</p></div>
+                    <div class="topic-side"><svg class="icon"><use href="#i-chevron"/></svg></div>
+                  </article>
+                  <article class="topic-card preparing">
+                    <div class="topic-icon mint"><svg class="icon"><use href="#i-spark"/></svg></div>
+                    <div class="topic-body"><div class="topic-meta">正在准备中</div><h2 class="card-title">低空经济试点观察</h2><p class="card-copy">服务端正在整理初始时间线。</p><div class="progress-line"><span></span></div></div>
+                    <div class="topic-side"><span class="chip mint">初始化</span></div>
+                  </article>
+                </div>
+              </div>
+              <nav class="bottom-nav"><div class="nav-item active"><span class="icon-wrap"><svg class="icon"><use href="#i-bookmark"/></svg></span>我的关注</div><div class="nav-item"><span class="icon-wrap"><svg class="icon"><use href="#i-clock"/></svg></span>时间轴</div><div class="nav-item"><span class="icon-wrap"><svg class="icon"><use href="#i-compass"/></svg></span>推荐</div></nav>
+            </div>
+          </div>
+        </article>
+
+        <article class="frame-card">
+          <h3>我的关注 · 有新动态</h3>
+          <div class="phone">
+            <div class="status-bar"><span>9:41</span><span class="status-icons"><i class="signal"></i><i class="battery"></i></span></div>
+            <div class="app cool">
+              <div class="topbar">
+                <button class="round-btn" aria-label="账号"><svg class="icon"><use href="#i-user"/></svg></button>
+                <h1>我的关注</h1>
+                <button class="round-btn" aria-label="新建"><svg class="icon"><use href="#i-plus"/></svg></button>
+              </div>
+              <div class="content">
+                <div class="scroll">
+                  <article class="topic-card unread current">
+                    <span class="dot"></span>
+                    <div class="topic-icon pin"><svg class="icon"><use href="#i-pin"/></svg></div>
+                    <div class="topic-body"><div class="topic-meta">置顶 · 4 月25日</div><h2 class="card-title">美伊战争总体进展</h2><p class="card-copy"><span class="latest">联调样本：minute 兼容修复后用于验证刷新稳定性。</span></p></div>
+                    <div class="topic-side"><span class="chip coral">新动态</span><svg class="icon"><use href="#i-chevron"/></svg></div>
+                  </article>
+                  <article class="topic-card">
+                    <div class="topic-icon"><svg class="icon"><use href="#i-bookmark"/></svg></div>
+                    <div class="topic-body"><div class="topic-meta">4 月7日</div><h2 class="card-title">霍尔木兹海峡航运情况</h2><p class="card-copy">风险已开始传导到具体航运运营和成本。</p></div>
+                    <div class="topic-side"><svg class="icon"><use href="#i-chevron"/></svg></div>
+                  </article>
+                  <article class="topic-card unread">
+                    <span class="dot"></span>
+                    <div class="topic-icon pin"><svg class="icon"><use href="#i-pin"/></svg></div>
+                    <div class="topic-body"><div class="topic-meta">3 月26日</div><h2 class="card-title">05事件时间线</h2><p class="card-copy"><span class="latest">外部反馈与最新走向有新增摘要。</span></p></div>
+                    <div class="topic-side"><span class="chip coral">新动态</span><svg class="icon"><use href="#i-chevron"/></svg></div>
+                  </article>
+                  <article class="topic-card">
+                    <div class="topic-icon"><svg class="icon"><use href="#i-bookmark"/></svg></div>
+                    <div class="topic-body"><div class="topic-meta">2 月24日</div><h2 class="card-title">03演进观察</h2><p class="card-copy">从背景、发酵到关键变化，持续追踪。</p></div>
+                    <div class="topic-side"><svg class="icon"><use href="#i-chevron"/></svg></div>
+                  </article>
+                </div>
+              </div>
+              <nav class="bottom-nav"><div class="nav-item active"><span class="nav-dot"></span><span class="icon-wrap"><svg class="icon"><use href="#i-bookmark"/></svg></span>我的关注</div><div class="nav-item"><span class="icon-wrap"><svg class="icon"><use href="#i-clock"/></svg></span>时间轴</div><div class="nav-item"><span class="icon-wrap"><svg class="icon"><use href="#i-compass"/></svg></span>推荐</div></nav>
+            </div>
+          </div>
+        </article>
+
+        <article class="frame-card">
+          <h3>我的关注 · 空状态</h3>
+          <div class="phone">
+            <div class="status-bar"><span>9:41</span><span class="status-icons"><i class="signal"></i><i class="battery"></i></span></div>
+            <div class="app cool">
+              <div class="topbar"><button class="round-btn" aria-label="账号"><svg class="icon"><use href="#i-user"/></svg></button><h1>我的关注</h1><button class="round-btn primary" aria-label="新建"><svg class="icon"><use href="#i-plus"/></svg></button></div>
+              <div class="content">
+                <div class="empty-panel">
+                  <div class="empty-visual"><svg class="icon" style="width:36px;height:36px"><use href="#i-bookmark"/></svg></div>
+                  <h2>还没有关注专题</h2>
+                  <p>先从推荐里关注一个事件，或新建一个你想持续追踪的专题。</p>
+                  <button class="solid-btn blue" style="min-height:44px;min-width:132px">去推荐看看</button>
+                </div>
+              </div>
+              <nav class="bottom-nav"><div class="nav-item active"><span class="icon-wrap"><svg class="icon"><use href="#i-bookmark"/></svg></span>我的关注</div><div class="nav-item"><span class="icon-wrap"><svg class="icon"><use href="#i-clock"/></svg></span>时间轴</div><div class="nav-item"><span class="icon-wrap"><svg class="icon"><use href="#i-compass"/></svg></span>推荐</div></nav>
+            </div>
+          </div>
+        </article>
+
+        <article class="frame-card">
+          <h3>时间轴详情页</h3>
+          <div class="phone">
+            <div class="status-bar"><span>9:41</span><span class="status-icons"><i class="signal"></i><i class="battery"></i></span></div>
+            <div class="app">
+              <div class="topbar"><button class="round-btn" aria-label="搜索"><svg class="icon"><use href="#i-search"/></svg></button><h1>时间轴</h1><button class="round-btn dark" aria-label="更多"><svg class="icon"><use href="#i-menu"/></svg></button></div>
+              <div class="content">
+                <div class="scroll">
+                  <section class="topic-hero">
+                    <div class="hero-title-row"><div><h2>美伊战争总体进展</h2><p>跟踪冲突升级、军事动作、外交回应和阶段变化。</p></div><span class="chip blue">已关注</span></div>
+                    <div class="hero-actions"><button class="ghost-btn"><svg class="icon" style="width:16px;height:16px"><use href="#i-share"/></svg> 分享</button><button class="ghost-btn"><svg class="icon" style="width:16px;height:16px"><use href="#i-plus"/></svg> 新建</button><button class="solid-btn blue">取消关注</button></div>
+                  </section>
+                  <div class="stat-row"><div class="stat"><b>4</b><span>时间节点</span></div><div class="stat"><b>7</b><span>动态数量</span></div><div class="stat"><b>4</b><span>重大节点</span></div></div>
+                  <div class="timeline-list">
+                    <article class="timeline-item major"><div class="timeline-date">2026年<br>4月4日</div><span class="timeline-dot"></span><h3>冲突从高压对峙进入公开升级阶段。</h3><p>点击展开查看该节点的 1 条动态。</p><span class="timeline-chevron"><svg class="icon" style="width:16px;height:16px"><use href="#i-chevron"/></svg></span></article>
+                    <article class="timeline-item major"><div class="timeline-date">2026年<br>4月5日</div><span class="timeline-dot"></span><h3>伊朗导弹发射由威慑表态转为实际行动。</h3><p>点击展开查看该节点的 1 条动态。</p><span class="timeline-chevron"><svg class="icon" style="width:16px;height:16px"><use href="#i-chevron"/></svg></span></article>
+                    <article class="timeline-item"><div class="timeline-date">2026年<br>4月6日</div><span class="timeline-dot"></span><h3>霍尔木兹航运专题开始出现实质性风险升级节点。</h3><p>点击展开查看该节点的 1 条动态。</p><span class="timeline-chevron"><svg class="icon" style="width:16px;height:16px"><use href="#i-chevron"/></svg></span></article>
+                    <article class="timeline-item major"><div class="timeline-date">2026年<br>4月24日</div><span class="timeline-dot"></span><h3>联调样本：minute 兼容修复后用于验证刷新稳定性。</h3><p>点击展开查看该节点的 4 条动态。</p><span class="timeline-chevron"><svg class="icon" style="width:16px;height:16px"><use href="#i-chevron"/></svg></span></article>
+                  </div>
+                </div>
+              </div>
+              <nav class="bottom-nav"><div class="nav-item"><span class="icon-wrap"><svg class="icon"><use href="#i-bookmark"/></svg></span>我的关注</div><div class="nav-item active"><span class="icon-wrap"><svg class="icon"><use href="#i-clock"/></svg></span>时间轴</div><div class="nav-item"><span class="icon-wrap"><svg class="icon"><use href="#i-compass"/></svg></span>推荐</div></nav>
+            </div>
+          </div>
+        </article>
+
+        <article class="frame-card">
+          <h3>时间轴 · 准备中状态</h3>
+          <div class="phone">
+            <div class="status-bar"><span>9:41</span><span class="status-icons"><i class="signal"></i><i class="battery"></i></span></div>
+            <div class="app">
+              <div class="topbar"><button class="round-btn" aria-label="搜索"><svg class="icon"><use href="#i-search"/></svg></button><h1>时间轴</h1><button class="round-btn dark" aria-label="更多"><svg class="icon"><use href="#i-menu"/></svg></button></div>
+              <div class="content">
+                <section class="topic-hero">
+                  <div class="hero-title-row"><div><h2>低空经济试点观察</h2><p>关注试点城市、航线开放、监管口径与商业化进度。</p></div><span class="chip mint">正在准备中</span></div>
+                  <div class="progress-line"><span style="width:44%"></span></div>
+                </section>
+                <div class="preparing-panel">
+                  <div class="chip-row"><span class="chip mint">初始化中</span><span class="chip gray">保留旧入口</span></div>
+                  <h2 class="card-title">时间线正在生成</h2>
+                  <p class="card-copy">服务端正在整理专题定义、检索初始信息并生成第一批节点。</p>
+                  <div class="prep-steps">
+                    <div class="prep-step"><span class="prep-index">1</span><div><strong>确认专题定义</strong><span>标题、摘要和关键词已锁定</span></div><span class="prep-state">完成</span></div>
+                    <div class="prep-step"><span class="prep-index">2</span><div><strong>整理初始节点</strong><span>生成可阅读的首批时间线</span></div><span class="prep-state">进行中</span></div>
+                    <div class="prep-step"><span class="prep-index">3</span><div><strong>同步到关注列表</strong><span>完成后自动进入可阅读状态</span></div><span class="prep-state" style="color:var(--app-muted)">等待</span></div>
+                  </div>
+                </div>
+              </div>
+              <nav class="bottom-nav"><div class="nav-item"><span class="icon-wrap"><svg class="icon"><use href="#i-bookmark"/></svg></span>我的关注</div><div class="nav-item active"><span class="icon-wrap"><svg class="icon"><use href="#i-clock"/></svg></span>时间轴</div><div class="nav-item"><span class="icon-wrap"><svg class="icon"><use href="#i-compass"/></svg></span>推荐</div></nav>
+            </div>
+          </div>
+        </article>
+
+        <article class="frame-card">
+          <h3>新建专题流程 · 输入</h3>
+          <div class="phone">
+            <div class="status-bar"><span>9:41</span><span class="status-icons"><i class="signal"></i><i class="battery"></i></span></div>
+            <div class="app cool">
+              <div class="topbar"><button class="round-btn"><svg class="icon"><use href="#i-user"/></svg></button><h1>我的关注</h1><button class="round-btn"><svg class="icon"><use href="#i-plus"/></svg></button></div>
+              <div class="content">
+                <article class="topic-card"><div class="topic-icon"><svg class="icon"><use href="#i-bookmark"/></svg></div><div class="topic-body"><div class="topic-meta">3 月26日</div><h2 class="card-title">05事件时间线</h2><p class="card-copy">聚焦关键节点、外部反馈与最新走向。</p></div><div class="topic-side"><svg class="icon"><use href="#i-chevron"/></svg></div></article>
+                <article class="topic-card unread"><div class="topic-icon pin"><svg class="icon"><use href="#i-pin"/></svg></div><div class="topic-body"><div class="topic-meta">4 月25日</div><h2 class="card-title">美伊战争总体进展</h2><p class="card-copy"><span class="latest">联调样本：minute 兼容修复后用于验证刷新稳定性。</span></p></div><div class="topic-side"><svg class="icon"><use href="#i-chevron"/></svg></div></article>
+              </div>
+              <nav class="bottom-nav"><div class="nav-item active"><span class="icon-wrap"><svg class="icon"><use href="#i-bookmark"/></svg></span>我的关注</div><div class="nav-item"><span class="icon-wrap"><svg class="icon"><use href="#i-clock"/></svg></span>时间轴</div><div class="nav-item"><span class="icon-wrap"><svg class="icon"><use href="#i-compass"/></svg></span>推荐</div></nav>
+              <div class="sheet-backdrop"></div>
+              <section class="bottom-sheet">
+                <div class="grabber"></div>
+                <h2>新建时间线</h2>
+                <p>输入你想追踪的事件或专题，系统会先扩写成更清楚的专题定义。</p>
+                <div class="input-box"><svg class="icon" style="color:var(--app-blue-deep)"><use href="#i-spark"/></svg><div><label>关键词</label><div class="fake-input">低空经济试点</div></div></div>
+                <button class="wide-btn dark"><svg class="icon"><use href="#i-spark"/></svg>AI 扩写</button>
+              </section>
+            </div>
+          </div>
+        </article>
+
+        <article class="frame-card">
+          <h3>新建专题流程 · 定义确认</h3>
+          <div class="phone">
+            <div class="status-bar"><span>9:41</span><span class="status-icons"><i class="signal"></i><i class="battery"></i></span></div>
+            <div class="app">
+              <div class="topbar"><button class="round-btn"><svg class="icon"><use href="#i-x"/></svg></button><h1>新建时间线</h1><button class="round-btn primary"><svg class="icon"><use href="#i-check"/></svg></button></div>
+              <div class="content">
+                <div class="definition-card">
+                  <div class="chip-row"><span class="chip mint">专题定义确认</span><span class="chip blue">将自动关注</span></div>
+                  <h3>低空经济试点观察</h3>
+                  <p class="card-copy">关注试点城市、航线开放、监管口径与商业化进度。</p>
+                  <div class="def-row"><span class="chip gray"><svg class="icon" style="width:15px;height:15px"><use href="#i-clock"/></svg> 事件起点：2026年3月28日</span><button class="text-btn">修改日期</button></div>
+                  <p class="card-copy">创建后专题定义会固定，系统将开始准备初始时间线。你可以取消关注，但不能编辑、删除或归档该专题。</p>
+                  <h4 class="card-title" style="font-size:14px;margin-top:18px">核心关键词</h4>
+                  <div class="keyword-cloud"><span class="keyword core">低空经济</span><span class="keyword core">试点城市</span></div>
+                  <h4 class="card-title" style="font-size:14px">扩展关键词</h4>
+                  <div class="keyword-cloud"><span class="keyword">航线开放</span><span class="keyword">监管口径</span><span class="keyword">商业化</span><span class="keyword">示范区</span></div>
+                </div>
+                <button class="wide-btn blue"><span class="loader" style="border-top-color:#fff;border-left-color:rgba(255,255,255,.28);border-bottom-color:rgba(255,255,255,.28);border-right-color:rgba(255,255,255,.28)"></span>正在创建</button>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <article class="frame-card">
+          <h3>手机号验证登录流程</h3>
+          <div class="phone">
+            <div class="status-bar"><span>9:41</span><span class="status-icons"><i class="signal"></i><i class="battery"></i></span></div>
+            <div class="app">
+              <div class="topbar"><button class="round-btn"><svg class="icon"><use href="#i-x"/></svg></button><h1>手机号验证</h1><span></span></div>
+              <div class="content" style="display:flex;flex-direction:column">
+                <section class="login-card">
+                  <div class="chip-row"><span class="chip blue">登录以同步</span><span class="chip mint">首次使用自动创建账号</span></div>
+                  <h2>继续保存你的关注</h2>
+                  <p>验证手机号后，当前游客关注和新建专题会尝试同步到账号内。</p>
+                  <div class="phone-form">
+                    <div class="form-line"><svg class="icon"><use href="#i-phone"/></svg><b>+86 138 0000 2026</b></div>
+                    <div class="code-boxes"><span class="code-box">2</span><span class="code-box">6</span><span class="code-box">0</span><span class="code-box">4</span></div>
+                    <button class="wide-btn blue">验证并同步</button>
+                    <button class="text-btn" style="align-self:center;margin-top:4px">45 秒后可重新发送</button>
+                  </div>
+                </section>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <article class="frame-card">
+          <h3>关注上限触发登录引导</h3>
+          <div class="phone">
+            <div class="status-bar"><span>9:41</span><span class="status-icons"><i class="signal"></i><i class="battery"></i></span></div>
+            <div class="app">
+              <div class="topbar"><button class="round-btn"><svg class="icon"><use href="#i-search"/></svg></button><h1>推荐</h1><button class="round-btn primary"><svg class="icon"><use href="#i-plus"/></svg></button></div>
+              <div class="content">
+                <div class="segment"><span class="active">你可能关心</span><span>当前热门</span><span>值得看看</span><span>历史</span></div>
+                <section class="rec-card"><div class="rec-main"><div class="chip-row"><span class="chip mint">新推荐</span></div><h2 class="card-title">低空经济试点观察</h2><p class="card-copy">关注试点城市、航线开放、监管口径与商业化进度。</p></div><div class="rec-actions"><button class="solid-btn">关注</button><button class="ghost-btn">查看</button></div></section>
+              </div>
+              <nav class="bottom-nav"><div class="nav-item"><span class="nav-dot"></span><span class="icon-wrap"><svg class="icon"><use href="#i-bookmark"/></svg></span>我的关注</div><div class="nav-item"><span class="icon-wrap"><svg class="icon"><use href="#i-clock"/></svg></span>时间轴</div><div class="nav-item active"><span class="icon-wrap"><svg class="icon"><use href="#i-compass"/></svg></span>推荐</div></nav>
+              <div class="sheet-backdrop"></div>
+              <section class="limit-dialog">
+                <div class="chip-row"><span class="chip lilac">游客额度已满</span></div>
+                <h2>登录后继续关注</h2>
+                <p>游客最多关注 5 个专题。手机号验证后可同步当前关注，并继续使用免费账号额度。</p>
+                <div class="quota"><div><strong>5 / 5</strong><br><span>游客关注额度</span></div><div><strong>10</strong><br><span>登录免费额度</span></div></div>
+                <button class="wide-btn blue">手机号验证</button>
+                <button class="text-btn" style="margin:10px auto 0;display:flex">稍后再说</button>
+              </section>
+            </div>
+          </div>
+        </article>
+
+        <article class="frame-card">
+          <h3>网络失败轻提示状态</h3>
+          <div class="phone">
+            <div class="status-bar"><span>9:41</span><span class="status-icons"><i class="signal"></i><i class="battery"></i></span></div>
+            <div class="app">
+              <div class="topbar"><button class="round-btn"><svg class="icon"><use href="#i-search"/></svg></button><h1>推荐</h1><button class="round-btn primary"><svg class="icon"><use href="#i-plus"/></svg></button></div>
+              <div class="content">
+                <div class="segment"><span class="active">你可能关心</span><span>当前热门</span><span>值得看看</span><span>历史</span></div>
+                <section class="rec-card"><div class="rec-main"><div class="chip-row"><span class="chip mint">保留旧内容</span></div><h2 class="card-title">AI 大模型发布节奏</h2><p class="card-copy">持续追踪模型发布、能力更新、生态合作和产品落地。</p></div><div class="rec-actions"><button class="solid-btn blue">关注</button><button class="ghost-btn">查看</button></div></section>
+                <section class="rec-card hot"><div class="rec-main"><div class="chip-row"><span class="chip coral">当前热门</span></div><h2 class="card-title">美伊战争总体进展</h2><p class="card-copy">跟踪冲突升级、军事动作、外交回应和阶段变化。</p></div><div class="rec-actions"><button class="ghost-btn">已关注</button><button class="ghost-btn">查看</button></div></section>
+              </div>
+              <nav class="bottom-nav"><div class="nav-item"><span class="icon-wrap"><svg class="icon"><use href="#i-bookmark"/></svg></span>我的关注</div><div class="nav-item"><span class="icon-wrap"><svg class="icon"><use href="#i-clock"/></svg></span>时间轴</div><div class="nav-item active"><span class="icon-wrap"><svg class="icon"><use href="#i-compass"/></svg></span>推荐</div></nav>
+              <div class="snackbar"><svg class="icon" style="color:var(--app-lavender)"><use href="#i-warning"/></svg><strong>刷新失败，已保留当前内容。稍后再试。</strong></div>
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="board-section">
+      <div class="section-head">
+        <h2>组件与规范</h2>
+        <p>组件保持低装饰、强状态区分，开发侧可以直接映射到当前 Flutter 页面和 DTO 字段。</p>
+      </div>
+      <div class="spec-grid">
+        <article class="spec-card">
+          <h3>色彩规范</h3>
+          <div class="palette">
+            <div class="color-row"><i style="background:#f7fbff"></i><div><b>Canvas #F7FBFF</b><span>主背景，清爽不压文字</span></div></div>
+            <div class="color-row"><i style="background:#4b8dff"></i><div><b>Blue #4B8DFF</b><span>主行动、当前状态</span></div></div>
+            <div class="color-row"><i style="background:#79dfbd"></i><div><b>Mint #79DFBD</b><span>准备中、成功、轻正向</span></div></div>
+            <div class="color-row"><i style="background:#ff7a66"></i><div><b>Coral #FF7A66</b><span>新动态、需要注意</span></div></div>
+            <div class="color-row"><i style="background:#cfc7ff"></i><div><b>Lavender #CFC7FF</b><span>最新摘要、额度提示</span></div></div>
+          </div>
+        </article>
+        <article class="spec-card type-sample">
+          <h3>字体层级</h3>
+          <h1>页面标题 22 / 700</h1>
+          <h2>专题标题 16 / 700</h2>
+          <p>正文不低于 14px，列表摘要使用 13.5px 到 14px，确保小屏快速扫读仍可读。</p>
+        </article>
+        <article class="spec-card">
+          <h3>核心组件</h3>
+          <div class="component-row"><button class="solid-btn blue">关注</button><button class="ghost-btn">已关注</button><button class="solid-btn loading"><span class="loader" style="width:13px;height:13px"></span></button></div>
+          <div class="component-row"><span class="chip coral">新动态</span><span class="chip mint">正在准备中</span><span class="chip blue">正在查看</span><span class="chip lilac">额度提示</span></div>
+          <div class="component-row"><button class="round-btn"><svg class="icon"><use href="#i-search"/></svg></button><button class="round-btn primary"><svg class="icon"><use href="#i-plus"/></svg></button><button class="round-btn dark"><svg class="icon"><use href="#i-menu"/></svg></button></div>
+          <p>主触控目标不小于 44px；重复列表卡片半径 8px；底部弹层保留大圆角以表达层级。</p>
+        </article>
+        <article class="spec-card">
+          <h3>动效说明</h3>
+          <ul>
+            <li>Tab 切换：240ms ease-out，图标胶囊轻移动。</li>
+            <li>下拉刷新：顶部轻胶囊 + spinner，不压缩列表结构。</li>
+            <li>新动态：红点淡入，摘要高亮 180ms 过渡。</li>
+            <li>底部弹层：280ms 上滑，背景遮罩 160ms 淡入。</li>
+            <li>Toast：底部 48px 高，3 秒自动消失。</li>
+          </ul>
+        </article>
+      </div>
+    </section>
+
+    <section class="board-section">
+      <div class="section-head">
+        <h2>移动端适配检查</h2>
+        <p>同一组件在 360 / 390 / 430px 宽度下保持可读；卡片标题允许自然换行，底部导航不遮挡列表内容。</p>
+      </div>
+      <div class="compact-phone-row">
+        <article class="frame-card"><h3>360px 小屏</h3><div class="phone small crop-phone"><div class="status-bar"><span>9:41</span><span class="status-icons"><i class="signal"></i><i class="battery"></i></span></div><div class="app cool"><div class="topbar"><button class="round-btn"><svg class="icon"><use href="#i-user"/></svg></button><h1>我的关注</h1><button class="round-btn"><svg class="icon"><use href="#i-plus"/></svg></button></div><div class="content"><article class="topic-card unread current"><span class="dot"></span><div class="topic-icon pin"><svg class="icon"><use href="#i-pin"/></svg></div><div class="topic-body"><div class="topic-meta">置顶 · 4 月25日</div><h2 class="card-title">美伊战争总体进展</h2><p class="card-copy"><span class="latest">联调样本：minute 兼容修复后用于验证刷新稳定性。</span></p></div><div class="topic-side"><svg class="icon"><use href="#i-chevron"/></svg></div></article><article class="topic-card"><div class="topic-icon"><svg class="icon"><use href="#i-bookmark"/></svg></div><div class="topic-body"><div class="topic-meta">4 月7日</div><h2 class="card-title">霍尔木兹海峡航运情况</h2><p class="card-copy">风险已开始传导到具体航运运营和成本。</p></div></article></div><nav class="bottom-nav"><div class="nav-item active"><span class="nav-dot"></span><span class="icon-wrap"><svg class="icon"><use href="#i-bookmark"/></svg></span>我的关注</div><div class="nav-item"><span class="icon-wrap"><svg class="icon"><use href="#i-clock"/></svg></span>时间轴</div><div class="nav-item"><span class="icon-wrap"><svg class="icon"><use href="#i-compass"/></svg></span>推荐</div></nav></div></div></article>
+        <article class="frame-card"><h3>390px 常见手机</h3><div class="phone crop-phone"><div class="status-bar"><span>9:41</span><span class="status-icons"><i class="signal"></i><i class="battery"></i></span></div><div class="app"><div class="topbar"><button class="round-btn"><svg class="icon"><use href="#i-search"/></svg></button><h1>推荐</h1><button class="round-btn primary"><svg class="icon"><use href="#i-plus"/></svg></button></div><div class="content"><div class="segment"><span class="active">你可能关心</span><span>当前热门</span><span>值得看看</span><span>历史</span></div><section class="rec-card"><div class="rec-main"><div class="chip-row"><span class="chip mint">你可能关心</span></div><h2 class="card-title">低空经济试点观察</h2><p class="card-copy">关注试点城市、航线开放、监管口径与商业化进度。</p></div><div class="rec-actions"><button class="solid-btn blue">关注</button><button class="ghost-btn">查看</button></div></section></div></div></div></article>
+        <article class="frame-card"><h3>430px 大屏手机</h3><div class="phone large crop-phone"><div class="status-bar"><span>9:41</span><span class="status-icons"><i class="signal"></i><i class="battery"></i></span></div><div class="app"><div class="topbar"><button class="round-btn"><svg class="icon"><use href="#i-search"/></svg></button><h1>时间轴</h1><button class="round-btn dark"><svg class="icon"><use href="#i-menu"/></svg></button></div><div class="content"><section class="topic-hero"><div class="hero-title-row"><div><h2>美伊战争总体进展</h2><p>跟踪冲突升级、军事动作、外交回应和阶段变化。</p></div><span class="chip blue">已关注</span></div></section><div class="stat-row"><div class="stat"><b>4</b><span>时间节点</span></div><div class="stat"><b>7</b><span>动态数量</span></div><div class="stat"><b>4</b><span>重大节点</span></div></div><div class="timeline-list"><article class="timeline-item major"><div class="timeline-date">2026年<br>4月4日</div><span class="timeline-dot"></span><h3>冲突从高压对峙进入公开升级阶段。</h3><p>点击展开查看该节点的 1 条动态。</p></article></div></div></div></div></article>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

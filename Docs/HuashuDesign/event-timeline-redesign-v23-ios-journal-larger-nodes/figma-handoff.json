@@ -1,0 +1,58 @@
+{
+  "name": "Event Timeline App Visual Redesign - iOS Journal Larger Nodes v23",
+  "date": "2026-04-28",
+  "basedOn": "v22 iOS Journal Single Line Stats",
+  "note": "This is a Figma reconstruction handoff file, not a native .fig source. This version keeps the v22 single-line stats and stacked timeline dates, and only enlarges the timeline node count dots from 20px to 24px. It preserves copy, business rules, and semantic colors, and uses no gradient fills, polygon blobs, black filled blocks, or dark filled blocks.",
+  "frameSize": {
+    "width": 390,
+    "height": 844
+  },
+  "timelineNodeDot": {
+    "size": 24,
+    "previousSize": 20,
+    "fontSize": 12,
+    "left": -29,
+    "top": 17,
+    "normal": {
+      "background": "#FFFFFF",
+      "text": "themeDeep",
+      "border": "themeSoft"
+    },
+    "major": {
+      "background": "coralSoft",
+      "text": "coralDeep",
+      "border": "soft coral"
+    }
+  },
+  "timelineStats": {
+    "layout": "single-line segmented capsule",
+    "items": ["4 时间节点", "7 动态数量", "4 重大节点"]
+  },
+  "frames": [
+    "recommend-hot",
+    "recommend-possible",
+    "recommend-random",
+    "recommend-history",
+    "my-list",
+    "my-unread",
+    "my-current",
+    "my-empty",
+    "timeline-normal",
+    "timeline-menu",
+    "timeline-preparing",
+    "timeline-failed",
+    "timeline-empty",
+    "create-input",
+    "create-confirm",
+    "login",
+    "limit",
+    "toast",
+    "components"
+  ],
+  "lockedCopy": {
+    "recommendTabs": ["可能关心", "当前热门", "随机看看", "历史记录"],
+    "bottomTabs": ["我的关注", "时间轴", "推荐"],
+    "timelineMenu": ["新建时间线", "分享", "取消关注", "时间顺序"],
+    "createFlow": ["新建时间线", "关键词", "AI 扩写", "专题定义确认", "事件起点", "修改日期", "核心关键词", "扩展关键词", "排除关键词"]
+  }
+}

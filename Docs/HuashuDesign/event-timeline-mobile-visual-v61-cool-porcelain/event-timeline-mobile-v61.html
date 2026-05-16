@@ -1,0 +1,1301 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>事件时间轴 Mobile Visual V61</title>
+  <style>
+    :root {
+      --ink: oklch(22% 0.036 250);
+      --ink-soft: oklch(45% 0.027 252);
+      --ink-faint: oklch(63% 0.021 250);
+      --paper: oklch(98.2% 0.006 235);
+      --paper-warm: oklch(96.4% 0.012 235);
+      --paper-raised: oklch(99% 0.004 240);
+      --paper-muted: oklch(94.5% 0.013 235);
+      --line: oklch(87.5% 0.018 235);
+      --line-strong: oklch(78% 0.035 235);
+      --accent: oklch(62% 0.12 225);
+      --accent-deep: oklch(45% 0.115 230);
+      --accent-soft: oklch(94% 0.038 225);
+      --major: oklch(63% 0.18 23);
+      --major-deep: oklch(47% 0.16 25);
+      --major-soft: oklch(95.5% 0.035 25);
+      --success: oklch(60% 0.13 155);
+      --success-deep: oklch(42% 0.11 160);
+      --success-soft: oklch(93.5% 0.046 155);
+      --shadow: 0 12px 30px oklch(34% 0.035 245 / 0.09);
+      --radius-card: 18px;
+      --radius-control: 15px;
+      --radius-pill: 999px;
+      --screen-w: 393px;
+      --screen-h: 852px;
+      color-scheme: light;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: oklch(92.8% 0.016 238);
+      color: var(--ink);
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "PingFang SC",
+        "Noto Sans CJK SC", "Microsoft YaHei UI", sans-serif;
+    }
+
+    .canvas {
+      max-width: 1420px;
+      margin: 0 auto;
+      padding: 28px 28px 40px;
+    }
+
+    .brief {
+      display: grid;
+      grid-template-columns: minmax(240px, 1.15fr) minmax(260px, 2fr);
+      gap: 18px;
+      margin-bottom: 24px;
+    }
+
+    .brief-panel {
+      background: var(--paper-raised);
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      padding: 18px 20px;
+      box-shadow: var(--shadow);
+    }
+
+    .brief-kicker {
+      color: var(--accent-deep);
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    h1,
+    h2,
+    p {
+      margin: 0;
+    }
+
+    h1 {
+      margin-top: 6px;
+      font-size: 26px;
+      line-height: 1.18;
+      letter-spacing: 0;
+    }
+
+    .brief p {
+      margin-top: 10px;
+      color: var(--ink-soft);
+      font-size: 14px;
+      line-height: 1.65;
+    }
+
+    .principles {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .principle {
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: var(--paper);
+    }
+
+    .principle strong {
+      display: block;
+      font-size: 13px;
+      line-height: 1.2;
+    }
+
+    .principle span {
+      display: block;
+      margin-top: 5px;
+      color: var(--ink-soft);
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    .phone-row {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(393px, 1fr));
+      gap: 24px;
+      align-items: start;
+      overflow-x: auto;
+      padding-bottom: 10px;
+    }
+
+    .phone-card {
+      min-width: 393px;
+    }
+
+    .phone-label {
+      margin: 0 0 10px 8px;
+      color: var(--ink-soft);
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .device {
+      width: calc(var(--screen-w) + 24px);
+      height: calc(var(--screen-h) + 24px);
+      padding: 12px;
+      border-radius: 58px;
+      background: oklch(19% 0.012 255);
+      box-shadow: 0 22px 54px oklch(20% 0.03 255 / 0.25);
+    }
+
+    .screen {
+      position: relative;
+      width: var(--screen-w);
+      height: var(--screen-h);
+      overflow: hidden;
+      border-radius: 46px;
+      background: var(--paper-warm);
+    }
+
+    .status {
+      position: absolute;
+      z-index: 10;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 54px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 31px;
+      color: var(--ink);
+      font-size: 15px;
+      font-weight: 700;
+      pointer-events: none;
+    }
+
+    .island {
+      position: absolute;
+      z-index: 11;
+      top: 12px;
+      left: 50%;
+      width: 124px;
+      height: 36px;
+      transform: translateX(-50%);
+      border-radius: var(--radius-pill);
+      background: oklch(8% 0.01 255);
+    }
+
+    .status-icons {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .icon-sprite {
+      position: absolute;
+      width: 0;
+      height: 0;
+      overflow: hidden;
+    }
+
+    .ui-icon {
+      width: 20px;
+      height: 20px;
+      display: block;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .ui-icon .filled {
+      fill: currentColor;
+      stroke: none;
+    }
+
+    .status-wifi {
+      width: 17px;
+      height: 17px;
+      stroke-width: 1.8;
+    }
+
+    .signal {
+      display: flex;
+      align-items: end;
+      gap: 2px;
+      height: 12px;
+    }
+
+    .signal i {
+      width: 3px;
+      border-radius: 2px;
+      background: currentColor;
+    }
+
+    .signal i:nth-child(1) { height: 4px; }
+    .signal i:nth-child(2) { height: 7px; }
+    .signal i:nth-child(3) { height: 9px; }
+    .signal i:nth-child(4) { height: 12px; }
+
+    .battery {
+      position: relative;
+      width: 25px;
+      height: 12px;
+      border: 1.5px solid currentColor;
+      border-radius: 3px;
+      padding: 1px;
+    }
+
+    .battery::after {
+      content: "";
+      position: absolute;
+      top: 3px;
+      right: -3px;
+      width: 2px;
+      height: 6px;
+      border-radius: 0 2px 2px 0;
+      background: currentColor;
+    }
+
+    .battery span {
+      display: block;
+      width: 78%;
+      height: 100%;
+      border-radius: 1px;
+      background: currentColor;
+    }
+
+    .app {
+      position: absolute;
+      inset: 54px 0 34px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      background: var(--paper-warm);
+    }
+
+    .scroll {
+      flex: 1;
+      overflow: hidden;
+      padding: 0 18px 18px;
+    }
+
+    .topbar {
+      display: grid;
+      grid-template-columns: 44px 1fr 44px;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 18px 10px;
+    }
+
+    .icon-button {
+      width: 44px;
+      height: 44px;
+      display: grid;
+      place-items: center;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-control);
+      background: var(--paper-raised);
+      color: var(--ink);
+      box-shadow: 0 7px 18px oklch(36% 0.025 72 / 0.05);
+    }
+
+    .icon-button .ui-icon {
+      width: 21px;
+      height: 21px;
+      stroke-width: 2.15;
+    }
+
+    .icon-button.primary {
+      border-color: oklch(76% 0.087 214);
+      background: var(--accent-soft);
+      color: var(--accent-deep);
+    }
+
+    .top-title {
+      min-width: 0;
+      text-align: center;
+      font-size: 21px;
+      line-height: 1.2;
+      font-weight: 850;
+      letter-spacing: 0;
+    }
+
+    .subline {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 0 18px 10px;
+      color: var(--ink-soft);
+      font-size: 12.5px;
+      line-height: 1.35;
+    }
+
+    .dot {
+      width: 6px;
+      height: 6px;
+      flex: 0 0 auto;
+      border-radius: var(--radius-pill);
+      background: var(--success);
+    }
+
+    .segment {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 4px;
+      margin: 0 18px 14px;
+      padding: 4px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: oklch(99% 0.006 82 / 0.88);
+    }
+
+    .seg-item {
+      height: 34px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 13px;
+      color: var(--ink-soft);
+      font-size: 12px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .seg-item.active {
+      background: var(--accent-soft);
+      color: var(--accent-deep);
+      box-shadow: inset 0 0 0 1px oklch(77% 0.075 214 / 0.38);
+    }
+
+    .section-note {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 10px;
+      color: var(--ink-soft);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .topic-card {
+      position: relative;
+      display: grid;
+      grid-template-columns: 44px 1fr;
+      gap: 12px;
+      padding: 15px;
+      margin-bottom: 12px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-card);
+      background: var(--paper-raised);
+      box-shadow: var(--shadow);
+    }
+
+    .topic-card.hot {
+      border-color: oklch(82% 0.07 31);
+      background: linear-gradient(180deg, var(--paper-raised), oklch(98% 0.018 225));
+    }
+
+    .rank {
+      width: 42px;
+      height: 42px;
+      display: grid;
+      place-items: center;
+      border: 1px solid oklch(82% 0.067 31);
+      border-radius: 15px;
+      background: var(--major-soft);
+      color: var(--major-deep);
+      font-size: 15px;
+      font-weight: 900;
+    }
+
+    .badge-icon {
+      width: 42px;
+      height: 42px;
+      display: grid;
+      place-items: center;
+      border: 1px solid oklch(84% 0.057 214);
+      border-radius: 15px;
+      background: var(--accent-soft);
+      color: var(--accent-deep);
+    }
+
+    .badge-icon .ui-icon {
+      width: 20px;
+      height: 20px;
+    }
+
+    .topic-main {
+      min-width: 0;
+    }
+
+    .topic-head {
+      display: flex;
+      gap: 8px;
+      align-items: flex-start;
+      justify-content: space-between;
+    }
+
+    .topic-title {
+      min-width: 0;
+      color: var(--ink);
+      font-size: 16.5px;
+      line-height: 1.32;
+      font-weight: 850;
+      letter-spacing: 0;
+    }
+
+    .topic-copy {
+      margin-top: 5px;
+      color: var(--ink-soft);
+      font-size: 12.4px;
+      line-height: 1.45;
+    }
+
+    .meta-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 9px;
+      color: var(--ink-faint);
+      font-size: 11.5px;
+      font-weight: 750;
+    }
+
+    .mini-tag,
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      height: 22px;
+      padding: 0 8px;
+      border-radius: var(--radius-pill);
+      border: 1px solid var(--line);
+      background: var(--paper);
+      color: var(--ink-soft);
+      font-size: 11px;
+      font-weight: 850;
+      white-space: nowrap;
+    }
+
+    .pill.major {
+      border-color: oklch(82% 0.07 31);
+      background: var(--major-soft);
+      color: var(--major-deep);
+    }
+
+    .pill.success {
+      border-color: oklch(82% 0.07 137);
+      background: var(--success-soft);
+      color: var(--success-deep);
+    }
+
+    .actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .button {
+      height: 38px;
+      display: grid;
+      place-items: center;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: var(--paper);
+      color: var(--ink-soft);
+      font-size: 12.5px;
+      font-weight: 850;
+    }
+
+    .button.primary {
+      border-color: oklch(76% 0.087 214);
+      background: var(--accent-soft);
+      color: var(--accent-deep);
+    }
+
+    .queue-card {
+      display: grid;
+      grid-template-columns: 42px 1fr;
+      gap: 12px;
+      padding: 14px;
+      margin-bottom: 12px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-card);
+      background: var(--paper-raised);
+      box-shadow: var(--shadow);
+    }
+
+    .queue-card.unread {
+      border-color: oklch(83% 0.074 31);
+      background: var(--major-soft);
+    }
+
+    .queue-icon {
+      width: 40px;
+      height: 40px;
+      display: grid;
+      place-items: center;
+      border: 1px solid oklch(85% 0.053 214);
+      border-radius: 14px;
+      background: var(--accent-soft);
+      color: var(--accent-deep);
+    }
+
+    .queue-icon .ui-icon {
+      width: 20px;
+      height: 20px;
+      stroke-width: 2.1;
+    }
+
+    .queue-card.unread .queue-icon {
+      border-color: oklch(82% 0.074 31);
+      background: var(--major-soft);
+      color: var(--major-deep);
+    }
+
+    .latest-strip {
+      display: grid;
+      grid-template-columns: 50px 1fr;
+      gap: 8px;
+      margin-top: 9px;
+      align-items: start;
+    }
+
+    .date-mini {
+      color: var(--accent-deep);
+      font-size: 11.5px;
+      font-weight: 900;
+      line-height: 1.4;
+    }
+
+    .latest-text {
+      padding: 6px 8px;
+      border: 1px solid var(--line);
+      border-radius: 11px;
+      background: var(--paper-muted);
+      color: var(--accent-deep);
+      font-size: 12px;
+      line-height: 1.42;
+      font-weight: 800;
+    }
+
+    .queue-card.unread .latest-text {
+      border-color: oklch(86% 0.052 31);
+      background: var(--major-soft);
+      color: var(--major-deep);
+    }
+
+    .summary-bar {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 8px;
+      padding: 0 18px 12px;
+    }
+
+    .stat-chip {
+      min-width: 0;
+      height: 38px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-pill);
+      background: var(--paper-raised);
+      color: var(--ink-soft);
+      font-size: 11.5px;
+      font-weight: 850;
+    }
+
+    .stat-chip strong {
+      color: var(--accent-deep);
+      font-size: 15px;
+      line-height: 1;
+    }
+
+    .stat-chip.major strong {
+      color: var(--major-deep);
+    }
+
+    .timeline {
+      position: relative;
+      padding: 6px 0 20px 28px;
+    }
+
+    .timeline::before {
+      content: "";
+      position: absolute;
+      top: 13px;
+      bottom: 20px;
+      left: 11px;
+      width: 2px;
+      border-radius: var(--radius-pill);
+      background: oklch(77% 0.096 137);
+    }
+
+    .node {
+      position: relative;
+      margin-bottom: 13px;
+      padding: 14px 14px 14px 15px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-card);
+      background: var(--paper-raised);
+      box-shadow: var(--shadow);
+    }
+
+    .node::before {
+      content: attr(data-count);
+      position: absolute;
+      left: -30px;
+      top: 17px;
+      width: 24px;
+      height: 24px;
+      display: grid;
+      place-items: center;
+      border: 2px solid oklch(74% 0.096 137);
+      border-radius: 50%;
+      background: var(--paper-warm);
+      color: var(--success-deep);
+      font-size: 11px;
+      font-weight: 900;
+    }
+
+    .node.major {
+      border-color: oklch(82% 0.074 31);
+    }
+
+    .node.major::before {
+      border-color: oklch(74% 0.14 31);
+      color: var(--major-deep);
+      background: var(--major-soft);
+    }
+
+    .date-chip {
+      display: inline-flex;
+      height: 26px;
+      align-items: center;
+      padding: 0 9px;
+      border: 1px solid oklch(82% 0.07 137);
+      border-radius: var(--radius-pill);
+      background: var(--success-soft);
+      color: var(--success-deep);
+      font-size: 11.5px;
+      font-weight: 900;
+    }
+
+    .node.major .date-chip {
+      border-color: oklch(82% 0.07 31);
+      background: var(--major-soft);
+      color: var(--major-deep);
+    }
+
+    .node-title {
+      margin-top: 8px;
+      font-size: 15.5px;
+      line-height: 1.35;
+      font-weight: 850;
+    }
+
+    .node-copy {
+      margin-top: 5px;
+      color: var(--ink-soft);
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    .entry-list {
+      margin-top: 11px;
+      padding-top: 10px;
+      border-top: 1px solid var(--line);
+    }
+
+    .entry {
+      display: grid;
+      grid-template-columns: 23px 1fr;
+      gap: 8px;
+      padding: 8px 0;
+    }
+
+    .entry-number {
+      width: 22px;
+      height: 22px;
+      display: grid;
+      place-items: center;
+      border-radius: 8px;
+      background: var(--paper-muted);
+      color: var(--ink-soft);
+      font-size: 11px;
+      font-weight: 900;
+    }
+
+    .entry strong {
+      display: block;
+      font-size: 12.8px;
+      line-height: 1.32;
+    }
+
+    .entry span {
+      display: block;
+      margin-top: 3px;
+      color: var(--ink-soft);
+      font-size: 11.5px;
+      line-height: 1.35;
+    }
+
+    .source-row {
+      display: flex;
+      gap: 6px;
+      margin-top: 7px;
+      color: var(--ink-faint);
+      font-size: 10.8px;
+      font-weight: 750;
+    }
+
+    .tabbar {
+      height: 72px;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      align-items: center;
+      border-top: 1px solid var(--line);
+      background: oklch(99% 0.006 82 / 0.98);
+    }
+
+    .tab {
+      position: relative;
+      display: grid;
+      gap: 4px;
+      justify-items: center;
+      color: var(--ink-soft);
+      font-size: 11px;
+      font-weight: 850;
+    }
+
+    .tab-icon {
+      position: relative;
+      width: 46px;
+      height: 31px;
+      display: grid;
+      place-items: center;
+      border-radius: var(--radius-pill);
+      color: currentColor;
+    }
+
+    .tab-icon .ui-icon {
+      width: 21px;
+      height: 21px;
+      stroke-width: 2.2;
+    }
+
+    .tab-icon::before,
+    .tab-icon::after {
+      content: "";
+      position: absolute;
+      box-sizing: border-box;
+    }
+
+    .icon-follow::before {
+      left: 15px;
+      top: 8px;
+      width: 16px;
+      height: 14px;
+      border: 2px solid currentColor;
+      border-radius: 4px 4px 7px 7px;
+    }
+
+    .icon-follow::after {
+      left: 20px;
+      top: 19px;
+      width: 6px;
+      height: 7px;
+      border-left: 2px solid currentColor;
+      border-bottom: 2px solid currentColor;
+      transform: skewY(-24deg);
+      border-radius: 0 0 0 2px;
+    }
+
+    .icon-timeline::before {
+      left: 22px;
+      top: 7px;
+      width: 2px;
+      height: 17px;
+      border-radius: var(--radius-pill);
+      background: currentColor;
+    }
+
+    .icon-timeline::after {
+      left: 14px;
+      top: 8px;
+      width: 18px;
+      height: 16px;
+      background:
+        radial-gradient(circle at 1px 2px, currentColor 0 2.5px, transparent 2.7px),
+        radial-gradient(circle at 17px 8px, currentColor 0 2.5px, transparent 2.7px),
+        radial-gradient(circle at 1px 14px, currentColor 0 2.5px, transparent 2.7px);
+    }
+
+    .icon-recommend::before {
+      left: 15px;
+      top: 7px;
+      width: 16px;
+      height: 17px;
+      border: 2px solid currentColor;
+      border-radius: 50% 50% 46% 46%;
+      transform: rotate(-10deg);
+    }
+
+    .icon-recommend::after {
+      left: 21px;
+      top: 11px;
+      width: 4px;
+      height: 11px;
+      border-radius: var(--radius-pill);
+      background: currentColor;
+      box-shadow: 0 -4px 0 -1px currentColor;
+      transform: rotate(28deg);
+    }
+
+    .tab.active {
+      color: var(--accent-deep);
+    }
+
+    .tab.active .tab-icon {
+      background: var(--accent-soft);
+      box-shadow: inset 0 0 0 1px oklch(78% 0.073 214 / 0.42);
+    }
+
+    .tab.major.active {
+      color: var(--major-deep);
+    }
+
+    .tab.major.active .tab-icon {
+      background: var(--major-soft);
+      box-shadow: inset 0 0 0 1px oklch(82% 0.074 31 / 0.5);
+    }
+
+    .new-dot {
+      position: absolute;
+      top: -1px;
+      right: calc(50% - 21px);
+      width: 8px;
+      height: 8px;
+      border: 1.5px solid var(--paper-raised);
+      border-radius: 50%;
+      background: var(--major);
+    }
+
+    .home {
+      position: absolute;
+      bottom: 10px;
+      left: 50%;
+      width: 138px;
+      height: 5px;
+      transform: translateX(-50%);
+      border-radius: var(--radius-pill);
+      background: oklch(20% 0.01 255 / 0.28);
+    }
+
+    @media (max-width: 860px) {
+      .canvas {
+        padding: 18px 14px 30px;
+      }
+
+      .brief {
+        grid-template-columns: 1fr;
+      }
+
+      .principles {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <svg class="icon-sprite" aria-hidden="true" focusable="false">
+    <symbol id="i-search" viewBox="0 0 24 24">
+      <circle cx="10.8" cy="10.8" r="6.2"></circle>
+      <path d="m15.4 15.4 4.2 4.2"></path>
+    </symbol>
+    <symbol id="i-plus" viewBox="0 0 24 24">
+      <path d="M12 5.5v13"></path>
+      <path d="M5.5 12h13"></path>
+    </symbol>
+    <symbol id="i-user" viewBox="0 0 24 24">
+      <circle cx="12" cy="8.4" r="3.5"></circle>
+      <path d="M5.6 19c1.1-3.3 3.2-5 6.4-5s5.3 1.7 6.4 5"></path>
+    </symbol>
+    <symbol id="i-dots" viewBox="0 0 24 24">
+      <circle class="filled" cx="6.4" cy="12" r="1.7"></circle>
+      <circle class="filled" cx="12" cy="12" r="1.7"></circle>
+      <circle class="filled" cx="17.6" cy="12" r="1.7"></circle>
+    </symbol>
+    <symbol id="i-bookmark" viewBox="0 0 24 24">
+      <path d="M7.2 5.6c0-1 .8-1.8 1.8-1.8h6c1 0 1.8.8 1.8 1.8v14.1L12 16.8l-4.8 2.9z"></path>
+    </symbol>
+    <symbol id="i-clock" viewBox="0 0 24 24">
+      <circle cx="12" cy="12" r="7.4"></circle>
+      <path d="M12 7.8v4.7l3 2"></path>
+    </symbol>
+    <symbol id="i-compass" viewBox="0 0 24 24">
+      <circle cx="12" cy="12" r="7.4"></circle>
+      <path d="m14.9 8.4-1.7 5-5 1.7 1.7-5z"></path>
+    </symbol>
+    <symbol id="i-pin" viewBox="0 0 24 24">
+      <path d="M8.7 4.5h6.6"></path>
+      <path d="M10 4.8v5.1l-2.6 3.3h9.2L14 9.9V4.8"></path>
+      <path d="M12 13.4v6.1"></path>
+    </symbol>
+    <symbol id="i-wifi" viewBox="0 0 24 24">
+      <path d="M5.2 9.2a10.8 10.8 0 0 1 13.6 0"></path>
+      <path d="M8.5 12.4a5.7 5.7 0 0 1 7 0"></path>
+      <circle class="filled" cx="12" cy="16.6" r="1.4"></circle>
+    </symbol>
+  </svg>
+  <main class="canvas">
+    <section class="brief">
+      <div class="brief-panel">
+        <div class="brief-kicker">Mobile visual direction · V61</div>
+        <h1>清透时间控制台</h1>
+        <p>
+          这版去掉淡黄色底色，改成冷调瓷白与雾蓝中性层。结构不变：新用户第一屏看热点专题，老用户回到关注队列，时间轴保留清楚的日期和重大节点。
+        </p>
+      </div>
+      <div class="brief-panel principles">
+        <div class="principle">
+          <strong>冷调中性</strong>
+          <span>背景改为瓷白和雾蓝，减少暖黄面积，卡片更清爽。</span>
+        </div>
+        <div class="principle">
+          <strong>状态分层</strong>
+          <span>蓝色负责当前操作，青绿负责时间轴，珊瑚只用于重大和新动态。</span>
+        </div>
+        <div class="principle">
+          <strong>线性图标</strong>
+          <span>全部入口换为同一笔触的 SVG 图标，避免符号字体的不稳定。</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="phone-row" aria-label="核心手机屏幕视觉稿">
+      <article class="phone-card">
+        <h2 class="phone-label">01 新用户默认屏：推荐 / 当前热门</h2>
+        <div class="device">
+          <div class="screen">
+            <div class="status">
+              <span>9:41</span>
+              <div class="status-icons">
+                <span class="signal"><i></i><i></i><i></i><i></i></span>
+                <svg class="ui-icon status-wifi"><use href="#i-wifi"></use></svg>
+                <span class="battery"><span></span></span>
+              </div>
+            </div>
+            <div class="island"></div>
+            <div class="app">
+              <div class="topbar">
+                <div class="icon-button"><svg class="ui-icon"><use href="#i-search"></use></svg></div>
+                <div class="top-title">推荐</div>
+                <div class="icon-button primary"><svg class="ui-icon"><use href="#i-plus"></use></svg></div>
+              </div>
+              <div class="segment">
+                <div class="seg-item active">当前热门</div>
+                <div class="seg-item">可能关心</div>
+                <div class="seg-item">探索</div>
+                <div class="seg-item">历史</div>
+              </div>
+              <div class="scroll">
+                <div class="section-note">
+                  <span>正在升温的可追踪专题</span>
+                  <span>更新于 1 小时内</span>
+                </div>
+
+                <div class="topic-card hot">
+                  <div class="rank">1</div>
+                  <div class="topic-main">
+                    <div class="topic-head">
+                      <div class="topic-title">AI 大模型发布</div>
+                      <span class="pill major">重大</span>
+                    </div>
+                    <div class="topic-copy">追踪模型发布时间、功能更新与外部反馈。</div>
+                    <div class="meta-row">
+                      <span>18,240 人关注</span>
+                      <span>发布会直播中</span>
+                    </div>
+                    <div class="actions">
+                      <div class="button primary">查看时间轴</div>
+                      <div class="button">关注</div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="topic-card">
+                  <div class="rank">2</div>
+                  <div class="topic-main">
+                    <div class="topic-head">
+                      <div class="topic-title">新能源汽车价格战</div>
+                      <span class="mini-tag">热度 92</span>
+                    </div>
+                    <div class="topic-copy">观察调价、销量波动与供应链连锁反应。</div>
+                    <div class="meta-row">
+                      <span>17,680 人关注</span>
+                      <span>24 小时新增 4 条</span>
+                    </div>
+                    <div class="actions">
+                      <div class="button primary">查看时间轴</div>
+                      <div class="button">关注</div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="topic-card">
+                  <div class="rank">3</div>
+                  <div class="topic-main">
+                    <div class="topic-head">
+                      <div class="topic-title">低空经济试点</div>
+                      <span class="mini-tag">政策</span>
+                    </div>
+                    <div class="topic-copy">关注试点城市、航线开放与商业化进度。</div>
+                    <div class="meta-row">
+                      <span>16,940 人关注</span>
+                      <span>规则再次细化</span>
+                    </div>
+                    <div class="actions">
+                      <div class="button primary">查看时间轴</div>
+                      <div class="button">关注</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <nav class="tabbar" aria-label="底部导航">
+                <div class="tab">
+                  <span class="tab-icon"><svg class="ui-icon"><use href="#i-bookmark"></use></svg></span>
+                  <span>我的关注</span>
+                </div>
+                <div class="tab">
+                  <span class="tab-icon"><svg class="ui-icon"><use href="#i-clock"></use></svg></span>
+                  <span>时间轴</span>
+                </div>
+                <div class="tab active">
+                  <span class="tab-icon"><svg class="ui-icon"><use href="#i-compass"></use></svg></span>
+                  <span>推荐</span>
+                </div>
+              </nav>
+            </div>
+            <div class="home"></div>
+          </div>
+        </div>
+      </article>
+
+      <article class="phone-card">
+        <h2 class="phone-label">02 老用户默认屏：我的关注</h2>
+        <div class="device">
+          <div class="screen">
+            <div class="status">
+              <span>9:41</span>
+              <div class="status-icons">
+                <span class="signal"><i></i><i></i><i></i><i></i></span>
+                <svg class="ui-icon status-wifi"><use href="#i-wifi"></use></svg>
+                <span class="battery"><span></span></span>
+              </div>
+            </div>
+            <div class="island"></div>
+            <div class="app">
+              <div class="topbar">
+                <div class="icon-button"><svg class="ui-icon"><use href="#i-user"></use></svg></div>
+                <div class="top-title">我的关注</div>
+                <div class="icon-button primary"><svg class="ui-icon"><use href="#i-plus"></use></svg></div>
+              </div>
+              <div class="summary-bar">
+                <div class="stat-chip"><strong>5</strong><span>关注</span></div>
+                <div class="stat-chip major"><strong>2</strong><span>新进展</span></div>
+                <div class="stat-chip"><strong>1</strong><span>置顶</span></div>
+              </div>
+              <div class="scroll">
+                <div class="queue-card unread">
+                  <div class="queue-icon"><svg class="ui-icon"><use href="#i-pin"></use></svg></div>
+                  <div class="topic-main">
+                    <div class="topic-head">
+                      <div class="topic-title">AI 大模型发布</div>
+                      <span class="pill major">新进展</span>
+                    </div>
+                    <div class="topic-copy">追踪模型发布时间、功能更新与外部反馈。</div>
+                    <div class="latest-strip">
+                      <div class="date-mini">今天<br>16:30</div>
+                      <div class="latest-text">发布会正式直播，API、应用端和企业版功能同步展示。</div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="queue-card unread">
+                  <div class="queue-icon"><svg class="ui-icon"><use href="#i-bookmark"></use></svg></div>
+                  <div class="topic-main">
+                    <div class="topic-head">
+                      <div class="topic-title">新能源汽车价格战</div>
+                      <span class="pill success">已关注</span>
+                    </div>
+                    <div class="topic-copy">观察调价、销量波动与供应链连锁反应。</div>
+                    <div class="latest-strip">
+                      <div class="date-mini">今天<br>12:10</div>
+                      <div class="latest-text">头部品牌回应补贴策略，竞争进入新阶段。</div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="queue-card">
+                  <div class="queue-icon"><svg class="ui-icon"><use href="#i-bookmark"></use></svg></div>
+                  <div class="topic-main">
+                    <div class="topic-head">
+                      <div class="topic-title">全球半导体供应链</div>
+                      <span class="pill success">已关注</span>
+                    </div>
+                    <div class="topic-copy">关注扩产、政策、交付周期与价格变化。</div>
+                    <div class="latest-strip">
+                      <div class="date-mini">4月30日</div>
+                      <div class="latest-text">先进封装产线追加投资，高带宽封装继续偏紧。</div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="queue-card">
+                  <div class="queue-icon"><svg class="ui-icon"><use href="#i-clock"></use></svg></div>
+                  <div class="topic-main">
+                    <div class="topic-head">
+                      <div class="topic-title">载人登月计划</div>
+                      <span class="mini-tag">初始化中</span>
+                    </div>
+                    <div class="topic-copy">跟踪任务节点、测试进展和关键窗口期。</div>
+                    <div class="latest-strip">
+                      <div class="date-mini">准备中</div>
+                      <div class="latest-text">正在整理初始节点，完成后进入可阅读状态。</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <nav class="tabbar" aria-label="底部导航">
+                <div class="tab major active">
+                  <span class="new-dot"></span>
+                  <span class="tab-icon"><svg class="ui-icon"><use href="#i-bookmark"></use></svg></span>
+                  <span>我的关注</span>
+                </div>
+                <div class="tab">
+                  <span class="tab-icon"><svg class="ui-icon"><use href="#i-clock"></use></svg></span>
+                  <span>时间轴</span>
+                </div>
+                <div class="tab">
+                  <span class="tab-icon"><svg class="ui-icon"><use href="#i-compass"></use></svg></span>
+                  <span>推荐</span>
+                </div>
+              </nav>
+            </div>
+            <div class="home"></div>
+          </div>
+        </div>
+      </article>
+
+      <article class="phone-card">
+        <h2 class="phone-label">03 核心阅读屏：时间轴</h2>
+        <div class="device">
+          <div class="screen">
+            <div class="status">
+              <span>9:41</span>
+              <div class="status-icons">
+                <span class="signal"><i></i><i></i><i></i><i></i></span>
+                <svg class="ui-icon status-wifi"><use href="#i-wifi"></use></svg>
+                <span class="battery"><span></span></span>
+              </div>
+            </div>
+            <div class="island"></div>
+            <div class="app">
+              <div class="topbar">
+                <div class="icon-button"><svg class="ui-icon"><use href="#i-search"></use></svg></div>
+                <div class="top-title">AI 大模型发布</div>
+                <div class="icon-button primary"><svg class="ui-icon"><use href="#i-dots"></use></svg></div>
+              </div>
+              <div class="subline">
+                <span class="dot"></span>
+                <span>已关注，追踪模型发布时间、功能更新与外部反馈</span>
+              </div>
+              <div class="summary-bar">
+                <div class="stat-chip"><strong>8</strong><span>时间节点</span></div>
+                <div class="stat-chip"><strong>24</strong><span>动态</span></div>
+                <div class="stat-chip major"><strong>3</strong><span>重大</span></div>
+              </div>
+              <div class="scroll">
+                <div class="timeline">
+                  <div class="node major" data-count="起">
+                    <span class="date-chip">2026年2月1日</span>
+                    <div class="node-title">项目立项确认，旗舰模型路线被正式拆解。</div>
+                    <div class="node-copy">研发团队明确多模态、推理效率和工作流执行方向。</div>
+                  </div>
+
+                  <div class="node" data-count="3">
+                    <span class="date-chip">2026年4月8日</span>
+                    <div class="node-title">开发者文档开始预热，外部接入准备加速。</div>
+                    <div class="node-copy">生态伙伴同步准备兼容方案和演示案例。</div>
+                  </div>
+
+                  <div class="node major" data-count="4">
+                    <span class="date-chip">今天 16:30</span>
+                    <div class="node-title">发布会正式直播，产品线进入公开验证阶段。</div>
+                    <div class="node-copy">直播同步展示 API、消费端应用和企业版功能。</div>
+                    <div class="entry-list">
+                      <div class="entry">
+                        <div class="entry-number">01</div>
+                        <div>
+                          <strong>新品发布会进入正式直播。</strong>
+                          <span>演示重点从单轮问答转向完整任务流。</span>
+                          <div class="source-row">
+                            <span>官方公告</span>
+                            <span>高可信</span>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="entry">
+                        <div class="entry-number">02</div>
+                        <div>
+                          <strong>首批媒体试玩内容同步解禁。</strong>
+                          <span>复杂问题拆解更稳定，但长链路仍需进度提示。</span>
+                          <div class="source-row">
+                            <span>媒体评测</span>
+                            <span>待核验</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="node" data-count="2">
+                    <span class="date-chip">今天 20:50</span>
+                    <div class="node-title">合作方开始公布接入计划。</div>
+                    <div class="node-copy">企业集成、知识库问答和自动化执行成为主要落点。</div>
+                  </div>
+                </div>
+              </div>
+              <nav class="tabbar" aria-label="底部导航">
+                <div class="tab">
+                  <span class="new-dot"></span>
+                  <span class="tab-icon"><svg class="ui-icon"><use href="#i-bookmark"></use></svg></span>
+                  <span>我的关注</span>
+                </div>
+                <div class="tab active">
+                  <span class="tab-icon"><svg class="ui-icon"><use href="#i-clock"></use></svg></span>
+                  <span>时间轴</span>
+                </div>
+                <div class="tab">
+                  <span class="tab-icon"><svg class="ui-icon"><use href="#i-compass"></use></svg></span>
+                  <span>推荐</span>
+                </div>
+              </nav>
+            </div>
+            <div class="home"></div>
+          </div>
+        </div>
+      </article>
+    </section>
+  </main>
+</body>
+</html>

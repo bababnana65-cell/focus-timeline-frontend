@@ -1,0 +1,65 @@
+{
+  "name": "Event Timeline App Visual Redesign - Reading Ticket v10",
+  "date": "2026-04-28",
+  "note": "This is a Figma reconstruction handoff file, not a native .fig source. It preserves frame names, dimensions, tokens, and component rules for manual rebuild or plugin import. This version refines the ticket-card style for a news-reading app: smaller icon stamps, narrower ticket stubs, more space for titles, summaries, and latest updates, with no gradient fills, polygon blobs, black filled blocks, or dark filled blocks.",
+  "frameSize": {
+    "width": 390,
+    "height": 844
+  },
+  "tokens": {
+    "canvas": "#F7FAFE",
+    "canvasMint": "#F6FBFA",
+    "surface": "#FFFFFF",
+    "ink": "#172237",
+    "muted": "#68758A",
+    "line": "#DCE8F1",
+    "blue": "#438CFF",
+    "blueDeep": "#2F72D6",
+    "mint": "#32C89B",
+    "mintSoft": "#E9F9F1",
+    "coral": "#FF746B",
+    "coralSoft": "#FFF1EF",
+    "lavender": "#8D86F5",
+    "lavenderSoft": "#F2F0FF",
+    "red": "#E94C57",
+    "green": "#1F9E74",
+    "paper": "#FFFFFF",
+    "paperBlue": "#F2F7FF",
+    "paperRose": "#FFF7F6",
+    "ticketLine": "#D5E2EC"
+  },
+  "typography": {
+    "pageTitle": "22/850/1.2",
+    "cardTitle": "16/850/1.28",
+    "body": "13.5/560/1.5",
+    "meta": "12/850",
+    "tab": "11/850"
+  },
+  "frames": [
+    "recommend-hot",
+    "recommend-possible",
+    "recommend-random",
+    "recommend-history",
+    "my-list",
+    "my-unread",
+    "my-current",
+    "my-empty",
+    "timeline-normal",
+    "timeline-menu",
+    "timeline-preparing",
+    "timeline-failed",
+    "timeline-empty",
+    "create-input",
+    "create-confirm",
+    "login",
+    "limit",
+    "toast",
+    "components"
+  ],
+  "lockedCopy": {
+    "recommendTabs": ["可能关心", "当前热门", "随机看看", "历史记录"],
+    "bottomTabs": ["我的关注", "时间轴", "推荐"],
+    "timelineMenu": ["新建时间线", "分享", "取消关注", "时间顺序"],
+    "createFlow": ["新建时间线", "关键词", "AI 扩写", "专题定义确认", "事件起点", "修改日期", "核心关键词", "扩展关键词", "排除关键词"]
+  }
+}

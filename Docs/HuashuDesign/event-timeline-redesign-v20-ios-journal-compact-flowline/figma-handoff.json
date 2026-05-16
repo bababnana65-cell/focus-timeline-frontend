@@ -1,0 +1,74 @@
+{
+  "name": "Event Timeline App Visual Redesign - iOS Journal Compact Flowline v20",
+  "date": "2026-04-28",
+  "basedOn": "v19 iOS Journal Flowline Dates",
+  "note": "This is a Figma reconstruction handoff file, not a native .fig source. This version is based on v19 and only compresses the left timeline date/flowline area to give the event cards more reading width. It preserves v17/v19 semantic color consistency and uses no gradient fills, polygon blobs, black filled blocks, or dark filled blocks.",
+  "frameSize": {
+    "width": 390,
+    "height": 844
+  },
+  "timelineFlowline": {
+    "leftTotalReservedWidth": 70,
+    "previousLeftTotalReservedWidth": 82,
+    "leftDateColumn": {
+      "width": 43,
+      "color": "blueDeep",
+      "alignment": "right"
+    },
+    "flowline": {
+      "trackWidth": 18,
+      "lineX": 55,
+      "color": "timeline theme mint",
+      "track": "very soft mint rounded lane",
+      "noGradient": true
+    },
+    "nodeCountDot": {
+      "size": 20,
+      "normal": "theme mint",
+      "major": "coral"
+    },
+    "eventCard": {
+      "position": "right of compact flowline",
+      "summaryColor": "muted"
+    }
+  },
+  "semanticColors": {
+    "recommendRank": "theme",
+    "followersIcon": "mint",
+    "pinnedTopicIcon": "lavender",
+    "normalTopicIcon": "blue",
+    "preparingTopicIcon": "mint",
+    "timelineDate": "blue",
+    "timelineNodeSummary": "muted",
+    "unreadLatestSummary": "coral",
+    "majorNodeCount": "coral",
+    "normalNodeCount": "theme"
+  },
+  "frames": [
+    "recommend-hot",
+    "recommend-possible",
+    "recommend-random",
+    "recommend-history",
+    "my-list",
+    "my-unread",
+    "my-current",
+    "my-empty",
+    "timeline-normal",
+    "timeline-menu",
+    "timeline-preparing",
+    "timeline-failed",
+    "timeline-empty",
+    "create-input",
+    "create-confirm",
+    "login",
+    "limit",
+    "toast",
+    "components"
+  ],
+  "lockedCopy": {
+    "recommendTabs": ["可能关心", "当前热门", "随机看看", "历史记录"],
+    "bottomTabs": ["我的关注", "时间轴", "推荐"],
+    "timelineMenu": ["新建时间线", "分享", "取消关注", "时间顺序"],
+    "createFlow": ["新建时间线", "关键词", "AI 扩写", "专题定义确认", "事件起点", "修改日期", "核心关键词", "扩展关键词", "排除关键词"]
+  }
+}

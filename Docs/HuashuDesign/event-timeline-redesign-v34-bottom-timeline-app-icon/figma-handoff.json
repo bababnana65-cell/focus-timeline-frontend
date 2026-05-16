@@ -1,0 +1,91 @@
+{
+  "name": "Event Timeline App Visual Redesign - Bottom Timeline App Icon v34",
+  "date": "2026-04-29",
+  "basedOn": "v33 Timeline Chevron Original",
+  "note": "This is a Figma reconstruction handoff file, not a native .fig source. This version replaces the bottom middle Timeline tab clock icon with the user-provided app icon mark while preserving v33 timeline chevron placement, v32 primary text right-edge alignment, v31 current-card behavior, v30 recommendation behavior, copy, business rules, and semantic colors.",
+  "frameSize": {
+    "width": 390,
+    "height": 844
+  },
+  "topicCard": {
+    "datePlacement": "left icon column, below icon",
+    "dateAlignment": "same row as latest-update summary box, measured after layout",
+    "preparingText": "hidden in following-list topic cards",
+    "newUpdateText": "removed",
+    "rightChevron": "removed",
+    "entry": "whole card tap",
+    "unreadIndicator": "red dot only",
+    "textColumn": "expanded",
+    "currentLabel": "removed",
+    "currentState": "background, border, and shadow only",
+    "directionText": "secondary, lighter color and lower weight",
+    "latestNodeMessage": "primary, stronger weight with soft highlight",
+    "textAlignment": "direction text and latest node message share the same left text start"
+  },
+  "textRightEdge": {
+    "baseline": "recommendation card text column",
+    "myFollowing": "topic text column aligns to baseline",
+    "timeline": "node title and summary align to baseline"
+  },
+  "timelineChevron": {
+    "position": "original in-card right position",
+    "right": "10px"
+  },
+  "bottomTimelineTab": {
+    "asset": "Docs/HuashuDesign/app icon/timeline_app_icon_mark_transparent.svg",
+    "replacement": "clock icon in the second bottom tab",
+    "label": "时间轴",
+    "size": "30px mark inside 34px wrap",
+    "alignment": "centered; icon slot and label rhythm match the My Following tab",
+    "selectedState": {
+      "blob": "#ffe1d2",
+      "main": "timeline theme deep green",
+      "accent": "coral accent from the current timeline theme",
+      "wrap": "timeline theme soft green"
+    },
+    "unselectedState": {
+      "blob": "soft gray-green",
+      "main": "muted gray",
+      "accent": "muted gray",
+      "wrap": "transparent"
+    }
+  },
+  "recommendationCard": {
+    "persistentButtons": "removed",
+    "leftIcon": "preserved from v28",
+    "typeChip": "removed from card; category remains in top tab",
+    "followedState": "moved under the existing left icon",
+    "textStyle": "unchanged from v28",
+    "swipeActions": {
+      "unfollowed": "关注",
+      "followed": "取消关注"
+    }
+  },
+  "frames": [
+    "recommend-hot",
+    "recommend-possible",
+    "recommend-random",
+    "recommend-history",
+    "my-list",
+    "my-unread",
+    "my-current",
+    "my-empty",
+    "timeline-normal",
+    "timeline-menu",
+    "timeline-preparing",
+    "timeline-failed",
+    "timeline-empty",
+    "create-input",
+    "create-confirm",
+    "login",
+    "limit",
+    "toast",
+    "components"
+  ],
+  "lockedCopy": {
+    "recommendTabs": ["可能关心", "当前热门", "随机看看", "历史记录"],
+    "bottomTabs": ["我的关注", "时间轴", "推荐"],
+    "timelineMenu": ["新建时间线", "分享", "取消关注", "时间顺序"],
+    "createFlow": ["新建时间线", "关键词", "AI 扩写", "专题定义确认", "事件起点", "修改日期", "核心关键词", "扩展关键词", "排除关键词"]
+  }
+}

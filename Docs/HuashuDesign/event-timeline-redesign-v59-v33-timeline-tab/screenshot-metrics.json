@@ -1,0 +1,60 @@
+{
+  "timelineSelected": {
+    "secondNav": {
+      "top": -1735,
+      "bottom": -1683,
+      "left": 1253,
+      "right": 1368,
+      "width": 115,
+      "height": 52
+    },
+    "secondWrap": {
+      "top": -1735,
+      "bottom": -1701,
+      "left": 1284,
+      "right": 1338,
+      "width": 54,
+      "height": 34
+    },
+    "secondIcon": {
+      "top": -1728,
+      "bottom": -1708,
+      "left": 1301,
+      "right": 1321,
+      "width": 20,
+      "height": 20
+    },
+    "secondText": "时间轴",
+    "usesClock": true,
+    "hasCustomTimelineMark": false
+  },
+  "timelineUnselected": {
+    "secondNav": {
+      "top": -3601,
+      "bottom": -3549,
+      "left": 743,
+      "right": 857,
+      "width": 115,
+      "height": 52
+    },
+    "secondWrap": {
+      "top": -3601,
+      "bottom": -3567,
+      "left": 773,
+      "right": 827,
+      "width": 54,
+      "height": 34
+    },
+    "secondIcon": {
+      "top": -3594,
+      "bottom": -3574,
+      "left": 790,
+      "right": 810,
+      "width": 20,
+      "height": 20
+    },
+    "secondText": "时间轴",
+    "usesClock": true,
+    "hasCustomTimelineMark": false
+  }
+}

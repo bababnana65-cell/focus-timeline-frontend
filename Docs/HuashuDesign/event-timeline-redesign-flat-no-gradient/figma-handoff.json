@@ -1,0 +1,60 @@
+{
+  "name": "Event Timeline App Visual Redesign - Flat Color v4",
+  "date": "2026-04-28",
+  "note": "This is a Figma reconstruction handoff file, not a native .fig source. It preserves frame names, dimensions, tokens, and component rules for manual rebuild or plugin import. This version uses flat colors only, with no gradient fills.",
+  "frameSize": {
+    "width": 390,
+    "height": 844
+  },
+  "tokens": {
+    "canvas": "#F6F9FC",
+    "canvasMint": "#F5FAF7",
+    "surface": "#FFFFFF",
+    "ink": "#121A2B",
+    "muted": "#647086",
+    "line": "#DFE8F0",
+    "blue": "#3478F6",
+    "blueDeep": "#225ECB",
+    "mint": "#35C59B",
+    "mintSoft": "#E8F8F1",
+    "coral": "#F26B5E",
+    "coralSoft": "#FFF0EE",
+    "lavender": "#9B8CF5",
+    "lavenderSoft": "#F0EFFF",
+    "red": "#E5484D"
+  },
+  "typography": {
+    "pageTitle": "21/850/1.2",
+    "cardTitle": "16/850/1.32",
+    "body": "13.5/560/1.48",
+    "meta": "12/850",
+    "tab": "11/850"
+  },
+  "frames": [
+    "recommend-hot",
+    "recommend-possible",
+    "recommend-random",
+    "recommend-history",
+    "my-list",
+    "my-unread",
+    "my-current",
+    "my-empty",
+    "timeline-normal",
+    "timeline-menu",
+    "timeline-preparing",
+    "timeline-failed",
+    "timeline-empty",
+    "create-input",
+    "create-confirm",
+    "login",
+    "limit",
+    "toast",
+    "components"
+  ],
+  "lockedCopy": {
+    "recommendTabs": ["可能关心", "当前热门", "随机看看", "历史记录"],
+    "bottomTabs": ["我的关注", "时间轴", "推荐"],
+    "timelineMenu": ["新建时间线", "分享", "取消关注", "时间顺序"],
+    "createFlow": ["新建时间线", "关键词", "AI 扩写", "专题定义确认", "事件起点", "修改日期", "核心关键词", "扩展关键词", "排除关键词"]
+  }
+}

@@ -1,0 +1,53 @@
+{
+  "name": "Event Timeline App Visual Redesign - iOS Journal Topic Alignment v26",
+  "date": "2026-04-29",
+  "basedOn": "v25 iOS Journal Swipe Recommend",
+  "note": "This is a Figma reconstruction handoff file, not a native .fig source. This version aligns the My Following date with the latest-update summary row, removes the redundant New Update text, removes the right chevron on topic cards, and gives the text column more width. It preserves v25 recommendation swipe behavior, copy, business rules, and semantic colors.",
+  "frameSize": {
+    "width": 390,
+    "height": 844
+  },
+  "topicCard": {
+    "datePlacement": "left icon column, below icon",
+    "dateAlignment": "same row as latest-update summary",
+    "newUpdateText": "removed",
+    "rightChevron": "removed",
+    "entry": "whole card tap",
+    "unreadIndicator": "red dot only",
+    "textColumn": "expanded"
+  },
+  "recommendationCard": {
+    "persistentButtons": "removed",
+    "swipeActions": {
+      "unfollowed": "关注",
+      "followed": "取消关注"
+    }
+  },
+  "frames": [
+    "recommend-hot",
+    "recommend-possible",
+    "recommend-random",
+    "recommend-history",
+    "my-list",
+    "my-unread",
+    "my-current",
+    "my-empty",
+    "timeline-normal",
+    "timeline-menu",
+    "timeline-preparing",
+    "timeline-failed",
+    "timeline-empty",
+    "create-input",
+    "create-confirm",
+    "login",
+    "limit",
+    "toast",
+    "components"
+  ],
+  "lockedCopy": {
+    "recommendTabs": ["可能关心", "当前热门", "随机看看", "历史记录"],
+    "bottomTabs": ["我的关注", "时间轴", "推荐"],
+    "timelineMenu": ["新建时间线", "分享", "取消关注", "时间顺序"],
+    "createFlow": ["新建时间线", "关键词", "AI 扩写", "专题定义确认", "事件起点", "修改日期", "核心关键词", "扩展关键词", "排除关键词"]
+  }
+}

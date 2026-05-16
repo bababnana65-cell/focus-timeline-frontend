@@ -1,0 +1,57 @@
+{
+  "name": "Event Timeline App Visual Redesign - iOS Journal Date Column Topics v24",
+  "date": "2026-04-28",
+  "basedOn": "v23 iOS Journal Larger Nodes",
+  "note": "This is a Figma reconstruction handoff file, not a native .fig source. This version keeps the v23 timeline work and changes the My Following topic cards so the date sits in the left icon column, visually aligned with the latest-update summary row. It preserves copy, business rules, and semantic colors, and uses no gradient fills, polygon blobs, black filled blocks, or dark filled blocks.",
+  "frameSize": {
+    "width": 390,
+    "height": 844
+  },
+  "topicCard": {
+    "leftColumn": {
+      "class": "topic-leading",
+      "children": ["topic-icon", "topic-date"],
+      "dateFontSize": 11.5,
+      "dateAlignment": "center",
+      "datePlacement": "below icon"
+    },
+    "bodyColumn": {
+      "children": ["title", "copy", "topic-latest-row"],
+      "latestRowFontSize": 12,
+      "latestAlignment": "same row as date"
+    },
+    "unreadColor": "coral",
+    "normalLatestColor": "blue"
+  },
+  "timelineNodeDot": {
+    "size": 24,
+    "inheritedFrom": "v23"
+  },
+  "frames": [
+    "recommend-hot",
+    "recommend-possible",
+    "recommend-random",
+    "recommend-history",
+    "my-list",
+    "my-unread",
+    "my-current",
+    "my-empty",
+    "timeline-normal",
+    "timeline-menu",
+    "timeline-preparing",
+    "timeline-failed",
+    "timeline-empty",
+    "create-input",
+    "create-confirm",
+    "login",
+    "limit",
+    "toast",
+    "components"
+  ],
+  "lockedCopy": {
+    "recommendTabs": ["可能关心", "当前热门", "随机看看", "历史记录"],
+    "bottomTabs": ["我的关注", "时间轴", "推荐"],
+    "timelineMenu": ["新建时间线", "分享", "取消关注", "时间顺序"],
+    "createFlow": ["新建时间线", "关键词", "AI 扩写", "专题定义确认", "事件起点", "修改日期", "核心关键词", "扩展关键词", "排除关键词"]
+  }
+}

@@ -1,0 +1,62 @@
+{
+  "name": "Event Timeline App Visual Redesign - iOS Journal Single Line Stats v22",
+  "date": "2026-04-28",
+  "basedOn": "v21 iOS Journal Stacked Flowline",
+  "note": "This is a Figma reconstruction handoff file, not a native .fig source. This version keeps the v21 stacked timeline flowline and changes the timeline stats row into a one-line segmented capsule inspired by the Recommendation category row. It preserves copy, business rules, and semantic colors, and uses no gradient fills, polygon blobs, black filled blocks, or dark filled blocks.",
+  "frameSize": {
+    "width": 390,
+    "height": 844
+  },
+  "timelineStats": {
+    "layout": "single-line segmented capsule",
+    "height": 44,
+    "columns": 3,
+    "items": ["4 时间节点", "7 动态数量", "4 重大节点"],
+    "numberStyle": {
+      "fontSize": 17,
+      "color": "themeDeep"
+    },
+    "labelStyle": {
+      "fontSize": 11,
+      "color": "muted"
+    },
+    "noVerticalStack": true
+  },
+  "timelineFlowline": {
+    "leftRailReservedWidth": 34,
+    "datePlacement": "top label inside node card",
+    "flowline": {
+      "trackWidth": 18,
+      "lineX": 17,
+      "color": "timeline theme mint",
+      "noGradient": true
+    }
+  },
+  "frames": [
+    "recommend-hot",
+    "recommend-possible",
+    "recommend-random",
+    "recommend-history",
+    "my-list",
+    "my-unread",
+    "my-current",
+    "my-empty",
+    "timeline-normal",
+    "timeline-menu",
+    "timeline-preparing",
+    "timeline-failed",
+    "timeline-empty",
+    "create-input",
+    "create-confirm",
+    "login",
+    "limit",
+    "toast",
+    "components"
+  ],
+  "lockedCopy": {
+    "recommendTabs": ["可能关心", "当前热门", "随机看看", "历史记录"],
+    "bottomTabs": ["我的关注", "时间轴", "推荐"],
+    "timelineMenu": ["新建时间线", "分享", "取消关注", "时间顺序"],
+    "createFlow": ["新建时间线", "关键词", "AI 扩写", "专题定义确认", "事件起点", "修改日期", "核心关键词", "扩展关键词", "排除关键词"]
+  }
+}

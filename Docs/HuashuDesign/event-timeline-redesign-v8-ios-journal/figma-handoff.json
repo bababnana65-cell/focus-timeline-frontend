@@ -1,0 +1,64 @@
+{
+  "name": "Event Timeline App Visual Redesign - iOS Journal v8",
+  "date": "2026-04-28",
+  "note": "This is a Figma reconstruction handoff file, not a native .fig source. It preserves frame names, dimensions, tokens, and component rules for manual rebuild or plugin import. This version explores an iOS Journal style: light paper-like backgrounds, soft cards, pale status tags, clear red dots, restrained borders, and no gradient fills, polygon blobs, black filled blocks, or dark filled blocks.",
+  "frameSize": {
+    "width": 390,
+    "height": 844
+  },
+  "tokens": {
+    "canvas": "#F7FAF8",
+    "canvasMint": "#F4FBF7",
+    "surface": "#FFFFFF",
+    "ink": "#152033",
+    "muted": "#6D7788",
+    "line": "#DFE9E4",
+    "blue": "#3D8BFF",
+    "blueDeep": "#2D73D9",
+    "mint": "#39C99A",
+    "mintSoft": "#E9F9F1",
+    "coral": "#FF7668",
+    "coralSoft": "#FFF0EE",
+    "lavender": "#8F87F7",
+    "lavenderSoft": "#F0EEFF",
+    "red": "#E94C57",
+    "green": "#1F9E74",
+    "paper": "#FFFEFA",
+    "paperBlue": "#F2F7FF",
+    "paperRose": "#FFF6F4"
+  },
+  "typography": {
+    "pageTitle": "22/850/1.2",
+    "cardTitle": "16/850/1.32",
+    "body": "13.5/560/1.48",
+    "meta": "12/850",
+    "tab": "11/850"
+  },
+  "frames": [
+    "recommend-hot",
+    "recommend-possible",
+    "recommend-random",
+    "recommend-history",
+    "my-list",
+    "my-unread",
+    "my-current",
+    "my-empty",
+    "timeline-normal",
+    "timeline-menu",
+    "timeline-preparing",
+    "timeline-failed",
+    "timeline-empty",
+    "create-input",
+    "create-confirm",
+    "login",
+    "limit",
+    "toast",
+    "components"
+  ],
+  "lockedCopy": {
+    "recommendTabs": ["可能关心", "当前热门", "随机看看", "历史记录"],
+    "bottomTabs": ["我的关注", "时间轴", "推荐"],
+    "timelineMenu": ["新建时间线", "分享", "取消关注", "时间顺序"],
+    "createFlow": ["新建时间线", "关键词", "AI 扩写", "专题定义确认", "事件起点", "修改日期", "核心关键词", "扩展关键词", "排除关键词"]
+  }
+}

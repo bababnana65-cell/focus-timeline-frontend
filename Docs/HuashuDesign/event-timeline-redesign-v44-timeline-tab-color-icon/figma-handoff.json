@@ -1,0 +1,115 @@
+{
+  "name": "Event Timeline App Visual Redesign - Timeline Tab Color Icon v44",
+  "date": "2026-04-29",
+  "basedOn": "v43 Muted Recommend Direction Copy",
+  "note": "This is a Figma reconstruction handoff file, not a native .fig source. This version removes the selected Timeline tab's outer round background and uses a directly colored icon aligned to the neighboring icon-plus-label tab height.",
+  "frameSize": {
+    "width": 390,
+    "height": 844
+  },
+  "topicCard": {
+    "datePlacement": "left icon column, below icon",
+    "dateAlignment": "same row as latest-update summary box, measured after layout",
+    "preparingText": "hidden in following-list topic cards",
+    "newUpdateText": "removed",
+    "rightChevron": "removed",
+    "entry": "whole card tap",
+    "unreadIndicator": "red dot only",
+    "textColumn": "expanded",
+    "currentLabel": "removed",
+    "currentState": "background, border, and shadow only",
+    "directionText": "tertiary, softer gray, smaller size, lower weight",
+    "latestNodeMessage": "primary, stronger weight with soft highlight",
+    "textAlignment": "direction text and latest node message share the same left text start",
+    "sampleCopyMode": "long text for wrapping inspection",
+    "titleLines": "at least 2 in primary cards",
+    "directionLines": "at least 2 in primary cards",
+    "latestSummaryLines": "at least 2 in primary cards"
+  },
+  "directionCopy": {
+    "selector": ".topic-body > .copy, .rec .copy",
+    "color": "#8C93A3",
+    "fontSize": "12.4px",
+    "fontWeight": "500",
+    "lineHeight": "1.42",
+    "intent": "Keep tracking direction readable but visually behind titles and latest node messages across Following and Recommendation cards"
+  },
+  "textRightEdge": {
+    "baseline": "recommendation card text column",
+    "myFollowing": "topic text column aligns to baseline",
+    "timeline": "node title and summary use a stable 248px reading lane reserved away from the chevron"
+  },
+  "timelineChevron": {
+    "position": "date-row right position",
+    "right": "8px",
+    "top": "15px",
+    "size": "22px",
+    "textWidth": "248px",
+    "textRule": ".timeline .node h3, .timeline .node p { width: min(248px, calc(100% - 21px)); text-wrap: wrap; }"
+  },
+  "bottomTimelineTab": {
+    "asset": "Docs/HuashuDesign/app icon/timeline_app_icon_mark_transparent.svg",
+    "replacement": "clock icon in the second bottom tab",
+    "visibleLabel": "none",
+    "semanticLabel": "时间轴",
+    "size": "selected 38px mark, unselected 34px mark, inside 58px by 52px wrap",
+    "alignment": "centered; pure icon entry visually matches the vertical height of the My Following icon plus label stack",
+    "selectedState": {
+      "blob": "#FBE5D7",
+      "main": "#5A9D2C",
+      "accent": "#F27861",
+      "wrap": "transparent"
+    },
+    "unselectedState": {
+      "blob": "soft gray-green",
+      "main": "muted gray",
+      "accent": "muted gray",
+      "wrap": "transparent"
+    }
+  },
+  "myFollowingTopPlus": {
+    "selector": ".app.mint .top .round:has(use[href=\"#plus\"])",
+    "background": "var(--theme-soft)",
+    "border": "var(--theme-line)",
+    "iconColor": "var(--theme-deep)",
+    "matches": "my-empty top-right plus button"
+  },
+  "recommendationCard": {
+    "persistentButtons": "removed",
+    "leftIcon": "preserved from v28",
+    "typeChip": "removed from card; category remains in top tab",
+    "followedState": "moved under the existing left icon",
+    "textStyle": "unchanged from v28",
+    "swipeActions": {
+      "unfollowed": "关注",
+      "followed": "取消关注"
+    }
+  },
+  "frames": [
+    "recommend-hot",
+    "recommend-possible",
+    "recommend-random",
+    "recommend-history",
+    "my-list",
+    "my-unread",
+    "my-current",
+    "my-empty",
+    "timeline-normal",
+    "timeline-menu",
+    "timeline-preparing",
+    "timeline-failed",
+    "timeline-empty",
+    "create-input",
+    "create-confirm",
+    "login",
+    "limit",
+    "toast",
+    "components"
+  ],
+  "lockedCopy": {
+    "recommendTabs": ["可能关心", "当前热门", "随机看看", "历史记录"],
+    "bottomTabs": ["我的关注", "时间轴", "推荐"],
+    "timelineMenu": ["新建时间线", "分享", "取消关注", "时间顺序"],
+    "createFlow": ["新建时间线", "关键词", "AI 扩写", "专题定义确认", "事件起点", "修改日期", "核心关键词", "扩展关键词", "排除关键词"]
+  }
+}

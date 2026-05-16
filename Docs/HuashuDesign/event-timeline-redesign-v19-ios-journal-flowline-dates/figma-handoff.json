@@ -1,0 +1,89 @@
+{
+  "name": "Event Timeline App Visual Redesign - iOS Journal Flowline Dates v19",
+  "date": "2026-04-28",
+  "basedOn": "v17 iOS Journal Mingrou Semantic",
+  "note": "This is a Figma reconstruction handoff file, not a native .fig source. This version is based on v17 and only adjusts the timeline reading structure into a visible front date column, center node flowline, and right event cards. It preserves v17 semantic color consistency and uses no gradient fills, polygon blobs, black filled blocks, or dark filled blocks.",
+  "frameSize": {
+    "width": 390,
+    "height": 844
+  },
+  "tokens": {
+    "canvas": "#FFFAF1",
+    "surface": "#FFFFFF",
+    "ink": "#182238",
+    "muted": "#6F7484",
+    "line": "#EADFCE",
+    "blue": "#28A7E8",
+    "blueDeep": "#167FC0",
+    "mint": "#7FC63E",
+    "mintSoft": "#EEF8D9",
+    "coral": "#F05B55",
+    "coralSoft": "#FFF1E8",
+    "lavender": "#A795D6",
+    "lavenderSoft": "#F1EDF8",
+    "paperBlue": "#EAF8FF",
+    "paperRose": "#FFF1E8",
+    "paperGreen": "#F0F8DE",
+    "paperGold": "#FFF0C9",
+    "brown": "#9B7047"
+  },
+  "timelineFlowline": {
+    "leftDateColumn": {
+      "width": 48,
+      "color": "blueDeep",
+      "alignment": "right"
+    },
+    "flowline": {
+      "color": "timeline theme mint",
+      "track": "very soft mint rounded lane",
+      "noGradient": true
+    },
+    "nodeCountDot": {
+      "normal": "theme mint",
+      "major": "coral"
+    },
+    "eventCard": {
+      "position": "right of flowline",
+      "summaryColor": "muted"
+    }
+  },
+  "semanticColors": {
+    "recommendRank": "theme",
+    "followersIcon": "mint",
+    "pinnedTopicIcon": "lavender",
+    "normalTopicIcon": "blue",
+    "preparingTopicIcon": "mint",
+    "timelineDate": "blue",
+    "timelineNodeSummary": "muted",
+    "unreadLatestSummary": "coral",
+    "majorNodeCount": "coral",
+    "normalNodeCount": "theme"
+  },
+  "frames": [
+    "recommend-hot",
+    "recommend-possible",
+    "recommend-random",
+    "recommend-history",
+    "my-list",
+    "my-unread",
+    "my-current",
+    "my-empty",
+    "timeline-normal",
+    "timeline-menu",
+    "timeline-preparing",
+    "timeline-failed",
+    "timeline-empty",
+    "create-input",
+    "create-confirm",
+    "login",
+    "limit",
+    "toast",
+    "components"
+  ],
+  "lockedCopy": {
+    "recommendTabs": ["可能关心", "当前热门", "随机看看", "历史记录"],
+    "bottomTabs": ["我的关注", "时间轴", "推荐"],
+    "timelineMenu": ["新建时间线", "分享", "取消关注", "时间顺序"],
+    "createFlow": ["新建时间线", "关键词", "AI 扩写", "专题定义确认", "事件起点", "修改日期", "核心关键词", "扩展关键词", "排除关键词"]
+  }
+}

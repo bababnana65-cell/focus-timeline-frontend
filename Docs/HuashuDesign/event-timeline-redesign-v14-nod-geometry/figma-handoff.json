@@ -1,0 +1,60 @@
+{
+  "name": "Event Timeline App Visual Redesign - NOD-inspired Geometry v14",
+  "date": "2026-04-28",
+  "note": "This is a Figma reconstruction handoff file, not a native .fig source. It preserves frame names, dimensions, tokens, and component rules for manual rebuild or plugin import. This version translates Nod Young-inspired geometric rhythm into a text-first news UI: precise contours, strong numbering, small high-energy color marks, and bold Chinese title hierarchy without copying any specific artwork. It uses no gradient fills, polygon blobs, black filled blocks, or dark filled blocks.",
+  "frameSize": {
+    "width": 390,
+    "height": 844
+  },
+  "tokens": {
+    "canvas": "#F7FAFE",
+    "surface": "#FFFFFF",
+    "ink": "#172237",
+    "muted": "#68758A",
+    "line": "#DCE8F1",
+    "blue": "#438CFF",
+    "blueDeep": "#2F72D6",
+    "mint": "#32C89B",
+    "coral": "#FF746B",
+    "red": "#E94C57",
+    "nodBlue": "#1F7CFF",
+    "nodMint": "#21C7A8",
+    "nodCoral": "#FF5D50",
+    "nodViolet": "#7667FF",
+    "nodInkline": "#172237"
+  },
+  "typography": {
+    "pageTitle": "22/950/1.2",
+    "cardTitle": "17/950/1.28",
+    "body": "13.5/560/1.54",
+    "meta": "12/850",
+    "geometryLabel": "9/950/1 uppercase"
+  },
+  "frames": [
+    "recommend-hot",
+    "recommend-possible",
+    "recommend-random",
+    "recommend-history",
+    "my-list",
+    "my-unread",
+    "my-current",
+    "my-empty",
+    "timeline-normal",
+    "timeline-menu",
+    "timeline-preparing",
+    "timeline-failed",
+    "timeline-empty",
+    "create-input",
+    "create-confirm",
+    "login",
+    "limit",
+    "toast",
+    "components"
+  ],
+  "lockedCopy": {
+    "recommendTabs": ["可能关心", "当前热门", "随机看看", "历史记录"],
+    "bottomTabs": ["我的关注", "时间轴", "推荐"],
+    "timelineMenu": ["新建时间线", "分享", "取消关注", "时间顺序"],
+    "createFlow": ["新建时间线", "关键词", "AI 扩写", "专题定义确认", "事件起点", "修改日期", "核心关键词", "扩展关键词", "排除关键词"]
+  }
+}
