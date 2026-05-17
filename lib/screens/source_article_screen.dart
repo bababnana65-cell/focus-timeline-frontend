@@ -1,12 +1,15 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:http/http.dart' as http;
 import 'package:url_launcher/url_launcher.dart';
 import 'package:webview_windows/webview_windows.dart';
 
 import '../models/timeline_models.dart';
+import '../services/remote/runtime_backend_config.dart';
 import '../services/source_article_service.dart';
 import '../theme/app_theme.dart';
 import '../widgets/source_attribution_badges.dart';
@@ -25,10 +28,45 @@ class SourceArticleScreen extends StatefulWidget {
   State<SourceArticleScreen> createState() => _SourceArticleScreenState();
 }
 
+/// State the in-app reader walks through.
+///   preparing  - building / fetching
+///   loading    - native webview is loading
+///   ready      - native webview finished loading
+///   webExtractedReady - Web platform: backend returned an extracted body
+///   webExtractedEmpty - Web platform: backend couldn't extract (offer open-in-tab)
+///   failure    - any unrecoverable error
+enum SourceArticleViewState {
+  preparing,
+  loading,
+  ready,
+  webExtractedReady,
+  webExtractedEmpty,
+  failure,
+}
+
+class _ExtractedArticle {
+  const _ExtractedArticle({
+    required this.title,
+    required this.byline,
+    required this.publishedAt,
+    required this.domain,
+    required this.contentText,
+    required this.leadImage,
+  });
+
+  final String? title;
+  final String? byline;
+  final String? publishedAt;
+  final String domain;
+  final String contentText;
+  final String? leadImage;
+}
+
 class _SourceArticleScreenState extends State<SourceArticleScreen> {
   static const SourceArticleService _sourceArticleService = SourceArticleService();
 
-  final WebviewController _controller = WebviewController();
+  // Native-only webview controller; left null on Web.
+  WebviewController? _controller;
 
   StreamSubscription<String>? _titleSubscription;
   StreamSubscription<String>? _urlSubscription;
@@ -41,6 +79,10 @@ class _SourceArticleScreenState extends State<SourceArticleScreen> {
   String? _noticeMessage;
   String? _statusMessageText;
   late String _title;
+
+  // Web-extract state
+  _ExtractedArticle? _extracted;
+  String? _extractError;
 
   @override
   void initState() {
@@ -56,7 +98,9 @@ class _SourceArticleScreenState extends State<SourceArticleScreen> {
     _urlSubscription?.cancel();
     _loadingSubscription?.cancel();
     _errorSubscription?.cancel();
-    unawaited(_controller.dispose());
+    if (_controller != null) {
+      unawaited(_controller!.dispose());
+    }
     super.dispose();
   }
 
@@ -87,15 +131,13 @@ class _SourceArticleScreenState extends State<SourceArticleScreen> {
           ],
         ),
         actions: <Widget>[
-          IconButton(
-            tooltip: '刷新',
-            onPressed: _isControllerReady
-                ? () async {
-                    await _controller.reload();
-                  }
-                : null,
-            icon: const Icon(Icons.refresh_rounded),
-          ),
+          if (widget.request.canOpenInApp)
+            IconButton(
+              tooltip: '在浏览器打开',
+              onPressed: () =>
+                  launchUrl(widget.request.uri!, mode: LaunchMode.externalApplication),
+              icon: const Icon(Icons.open_in_new_rounded),
+            ),
           IconButton(
             tooltip: '关闭',
             onPressed: () => Navigator.of(context).maybePop(),
@@ -109,38 +151,143 @@ class _SourceArticleScreenState extends State<SourceArticleScreen> {
 
   Widget _buildBody(BuildContext context) {
     if (_viewState == SourceArticleViewState.failure) {
-      return Center(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              const Icon(Icons.language_rounded, size: 44, color: AppTheme.accent),
-              const SizedBox(height: 16),
-              Text(
-                _statusMessage,
-                textAlign: TextAlign.center,
-                style: Theme.of(context).textTheme.bodyLarge?.copyWith(height: 1.6),
+      return _buildFailure(context);
+    }
+    if (_viewState == SourceArticleViewState.webExtractedEmpty) {
+      return _buildWebFallback(context);
+    }
+    if (_viewState == SourceArticleViewState.webExtractedReady) {
+      return _buildWebReader(context);
+    }
+    // Preparing / loading / ready  — native webview path
+    return _buildNativeWebview(context);
+  }
+
+  Widget _buildFailure(BuildContext context) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 24),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            const Icon(Icons.language_rounded, size: 44, color: AppTheme.accent),
+            const SizedBox(height: 16),
+            Text(
+              _statusMessage,
+              textAlign: TextAlign.center,
+              style: Theme.of(context).textTheme.bodyLarge?.copyWith(height: 1.6),
+            ),
+            const SizedBox(height: 16),
+            if (widget.request.canOpenInApp)
+              FilledButton.icon(
+                onPressed: () =>
+                    launchUrl(widget.request.uri!, mode: LaunchMode.externalApplication),
+                icon: const Icon(Icons.open_in_new_rounded, size: 18),
+                label: const Text('在浏览器打开原文'),
               ),
-              const SizedBox(height: 16),
-              Wrap(
-                spacing: 12,
-                runSpacing: 12,
-                alignment: WrapAlignment.center,
-                children: <Widget>[
-                  if (_isControllerReady && widget.request.canOpenInApp)
-                    FilledButton(
-                      onPressed: _retryLoad,
-                      child: const Text('重试'),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildWebReader(BuildContext context) {
+    final article = _extracted!;
+    final body = article.contentText;
+    return SingleChildScrollView(
+      padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
+      child: Container(
+        decoration: BoxDecoration(
+          color: AppTheme.surface,
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: AppTheme.border),
+        ),
+        padding: const EdgeInsets.fromLTRB(18, 18, 18, 22),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            SourceAttributionBadges(entry: widget.entry, compact: true),
+            const SizedBox(height: 12),
+            if (article.title != null && article.title!.isNotEmpty)
+              Text(
+                article.title!,
+                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                      fontWeight: FontWeight.w700,
+                      height: 1.3,
                     ),
-                ],
+              ),
+            const SizedBox(height: 8),
+            Wrap(
+              spacing: 10,
+              runSpacing: 4,
+              children: <Widget>[
+                if (article.byline != null && article.byline!.isNotEmpty)
+                  _MetaPill(text: article.byline!),
+                if (article.publishedAt != null && article.publishedAt!.isNotEmpty)
+                  _MetaPill(text: article.publishedAt!),
+                _MetaPill(text: article.domain),
+              ],
+            ),
+            if (article.leadImage != null && article.leadImage!.isNotEmpty) ...<Widget>[
+              const SizedBox(height: 14),
+              ClipRRect(
+                borderRadius: BorderRadius.circular(12),
+                child: Image.network(
+                  article.leadImage!,
+                  fit: BoxFit.cover,
+                  errorBuilder: (_, __, ___) => const SizedBox.shrink(),
+                ),
               ),
             ],
-          ),
+            const SizedBox(height: 16),
+            SelectableText(
+              body,
+              style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                    height: 1.75,
+                    fontSize: 16,
+                  ),
+            ),
+            const SizedBox(height: 18),
+            OutlinedButton.icon(
+              onPressed: () =>
+                  launchUrl(widget.request.uri!, mode: LaunchMode.externalApplication),
+              icon: const Icon(Icons.open_in_new_rounded, size: 16),
+              label: const Text('在浏览器查看原网页'),
+            ),
+          ],
         ),
-      );
-    }
+      ),
+    );
+  }
 
+  Widget _buildWebFallback(BuildContext context) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 24),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            const Icon(Icons.article_outlined, size: 44, color: AppTheme.accent),
+            const SizedBox(height: 16),
+            Text(
+              _extractError ?? '后端暂时无法提取该网页的正文。',
+              textAlign: TextAlign.center,
+              style: Theme.of(context).textTheme.bodyLarge?.copyWith(height: 1.6),
+            ),
+            const SizedBox(height: 16),
+            FilledButton.icon(
+              onPressed: () =>
+                  launchUrl(widget.request.uri!, mode: LaunchMode.externalApplication),
+              icon: const Icon(Icons.open_in_new_rounded, size: 18),
+              label: const Text('在浏览器打开原文'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildNativeWebview(BuildContext context) {
     return Stack(
       children: <Widget>[
         Positioned.fill(
@@ -194,12 +341,13 @@ class _SourceArticleScreenState extends State<SourceArticleScreen> {
                   ),
                 ),
                 Expanded(
-                  child: _isControllerReady
+                  child: (_controller != null && _isControllerReady)
                       ? Webview(
-                          _controller,
-                          permissionRequested: (_, __, ___) => WebviewPermissionDecision.allow,
+                          _controller!,
+                          permissionRequested: (_, __, ___) =>
+                              WebviewPermissionDecision.allow,
                         )
-                      : const SizedBox.shrink(),
+                      : const Center(child: CircularProgressIndicator()),
                 ),
               ],
             ),
@@ -222,22 +370,13 @@ class _SourceArticleScreenState extends State<SourceArticleScreen> {
       return;
     }
 
-    // Flutter Web doesn't ship webview_windows. Hand the URL off to the
-    // browser tab system instead — same UX as native 'open in browser'.
+    // ---- Web: backend-extract + native Flutter render ----
     if (kIsWeb) {
-      final uri = widget.request.uri!;
-      final launched = await launchUrl(uri, mode: LaunchMode.externalApplication);
-      if (!mounted) return;
-      if (launched) {
-        // Pop back to the timeline so the user sees their previous context;
-        // the article will load in a separate tab.
-        Navigator.of(context).pop();
-      } else {
-        _setFailure('无法打开原文链接：$uri');
-      }
+      await _loadExtractedForWeb();
       return;
     }
 
+    // ---- Native Windows: in-app WebView2 ----
     if (defaultTargetPlatform != TargetPlatform.windows) {
       _setFailure('当前平台暂未启用应用内原文窗口。');
       return;
@@ -249,14 +388,13 @@ class _SourceArticleScreenState extends State<SourceArticleScreen> {
       return;
     }
 
+    _controller = WebviewController();
     try {
-      await _controller.initialize();
-      await _controller.setBackgroundColor(AppTheme.background);
-      await _controller.setPopupWindowPolicy(WebviewPopupWindowPolicy.sameWindow);
+      await _controller!.initialize();
+      await _controller!.setBackgroundColor(AppTheme.background);
+      await _controller!.setPopupWindowPolicy(WebviewPopupWindowPolicy.sameWindow);
     } on PlatformException {
-      if (!mounted) {
-        return;
-      }
+      if (!mounted) return;
       _setFailure('原文窗口初始化失败，请稍后重试。');
       return;
     }
@@ -267,87 +405,142 @@ class _SourceArticleScreenState extends State<SourceArticleScreen> {
         _viewState = SourceArticleViewState.loading;
       });
     }
+    _wireWebviewStreams();
+    await _controller!.loadUrl(widget.request.uri!.toString());
+  }
 
-    _titleSubscription = _controller.title.listen((value) {
-      if (!mounted || value.trim().isEmpty) {
-        return;
-      }
-      setState(() => _title = value);
-    });
-    _urlSubscription = _controller.url.listen((value) {
-      if (!mounted) {
-        return;
-      }
-      setState(() => _currentUrl = value);
-    });
-    _loadingSubscription = _controller.loadingState.listen((state) {
-      if (!mounted) {
-        return;
-      }
-      setState(() {
-        if (state == LoadingState.loading) {
-          _viewState = SourceArticleViewState.loading;
-        }
-        if (state == LoadingState.navigationCompleted) {
-          _viewState = SourceArticleViewState.ready;
-        }
-      });
-    });
-    _errorSubscription = _controller.onLoadError.listen((status) {
-      if (!mounted) {
-        return;
-      }
-      _setFailure(
-        _sourceArticleService.messageForLoadError(
-          status,
-          isFallbackSearch: widget.request.kind == SourceArticleOpenKind.searchFallback,
-        ),
-      );
-    });
+  Future<void> _loadExtractedForWeb() async {
+    final uri = widget.request.uri!;
+    // Build backend URL from RuntimeBackendConfig (dart-define).
+    final backend = RuntimeBackendConfig.fromEnvironment.baseUrl;
+    if (backend.isEmpty) {
+      _setFailure('未配置后端地址，无法在应用内显示原文。');
+      return;
+    }
+    final endpoint = Uri.parse(
+      '${backend.endsWith('/') ? backend.substring(0, backend.length - 1) : backend}'
+      '/articles/extract',
+    ).replace(queryParameters: <String, String>{'url': uri.toString()});
 
     try {
-      await _controller.loadUrl(widget.request.uri!.toString());
-    } on PlatformException {
-      if (!mounted) {
-        return;
+      final resp = await http.get(endpoint);
+      if (resp.statusCode < 200 || resp.statusCode >= 300) {
+        throw http.ClientException('HTTP ${resp.statusCode}');
       }
-      _setFailure('原文地址暂时无法打开，请稍后重试。');
-      return;
+      final raw = jsonDecode(utf8.decode(resp.bodyBytes));
+      // Envelope: {success, data}
+      final data = (raw is Map && raw['data'] is Map)
+          ? (raw['data'] as Map).cast<String, dynamic>()
+          : (raw as Map).cast<String, dynamic>();
+      if (data['ok'] == true && (data['contentText'] as String? ?? '').isNotEmpty) {
+        final article = _ExtractedArticle(
+          title: (data['title'] as String?)?.trim().isEmpty ?? true
+              ? widget.entry.title
+              : (data['title'] as String),
+          byline: data['byline'] as String?,
+          publishedAt: data['publishedAt'] as String?,
+          domain: (data['domain'] as String?) ?? uri.host,
+          contentText: data['contentText'] as String,
+          leadImage: data['leadImage'] as String?,
+        );
+        if (!mounted) return;
+        setState(() {
+          _extracted = article;
+          _title = article.title ?? widget.entry.title;
+          _currentUrl = uri.toString();
+          _viewState = SourceArticleViewState.webExtractedReady;
+        });
+      } else {
+        if (!mounted) return;
+        setState(() {
+          _extractError =
+              (data['fallbackReason'] as String?) ?? '后端无法提取该网页正文，请直接在浏览器查看。';
+          _viewState = SourceArticleViewState.webExtractedEmpty;
+        });
+      }
+    } catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _extractError = '正文提取失败：$e';
+        _viewState = SourceArticleViewState.webExtractedEmpty;
+      });
     }
   }
 
-  Future<void> _retryLoad() async {
-    if (!_isControllerReady || widget.request.uri == null) {
-      return;
-    }
-
-    setState(() {
-      _viewState = SourceArticleViewState.loading;
+  void _wireWebviewStreams() {
+    if (_controller == null) return;
+    _titleSubscription = _controller!.title.listen((value) {
+      if (!mounted || value.trim().isEmpty) return;
+      setState(() => _title = value);
     });
-    await _controller.loadUrl(widget.request.uri!.toString());
+    _urlSubscription = _controller!.url.listen((value) {
+      if (!mounted) return;
+      setState(() => _currentUrl = value);
+    });
+    _loadingSubscription = _controller!.loadingState.listen((state) {
+      if (!mounted) return;
+      if (state == LoadingState.navigationCompleted) {
+        setState(() {
+          _viewState = SourceArticleViewState.ready;
+          _statusMessageText = null;
+        });
+      } else if (state == LoadingState.loading) {
+        setState(() => _viewState = SourceArticleViewState.loading);
+      }
+    });
+    _errorSubscription = _controller!.onLoadError.listen((status) {
+      if (!mounted) return;
+      _setFailure(_sourceArticleService.messageForLoadError(
+        status,
+        isFallbackSearch: widget.request.kind == SourceArticleOpenKind.searchFallback,
+      ));
+    });
   }
 
   void _setFailure(String message) {
-    if (!mounted) {
-      return;
-    }
+    if (!mounted) return;
     setState(() {
       _viewState = SourceArticleViewState.failure;
       _statusMessageText = message;
     });
   }
 
-  String get _statusMessage => _statusMessageText ?? '原文页面加载失败，请稍后重试。';
-
-  bool get _isShowingProgress {
-    return _viewState == SourceArticleViewState.preparing ||
-        _viewState == SourceArticleViewState.loading;
+  Future<void> _retryLoad() async {
+    if (_controller == null) return;
+    setState(() {
+      _viewState = SourceArticleViewState.loading;
+      _statusMessageText = null;
+    });
+    await _controller!.loadUrl(widget.request.uri!.toString());
   }
+
+  String get _statusMessage =>
+      _statusMessageText ?? widget.request.errorMessage ?? '原文加载失败。';
+
+  bool get _isShowingProgress => _viewState == SourceArticleViewState.loading;
 }
 
-enum SourceArticleViewState {
-  preparing,
-  loading,
-  ready,
-  failure,
+
+class _MetaPill extends StatelessWidget {
+  const _MetaPill({required this.text});
+  final String text;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+      decoration: BoxDecoration(
+        color: AppTheme.surfaceMuted,
+        borderRadius: BorderRadius.circular(6),
+        border: Border.all(color: AppTheme.border),
+      ),
+      child: Text(
+        text,
+        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+              color: AppTheme.textSecondary,
+              fontSize: 11.5,
+            ),
+      ),
+    );
+  }
 }
