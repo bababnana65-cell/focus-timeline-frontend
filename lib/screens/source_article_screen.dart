@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:webview_windows/webview_windows.dart';
 
 import '../models/timeline_models.dart';
@@ -218,6 +219,22 @@ class _SourceArticleScreenState extends State<SourceArticleScreen> {
   Future<void> _initializeViewer() async {
     if (!widget.request.canOpenInApp) {
       _setFailure(widget.request.errorMessage ?? '当前节点暂未提供可打开的原文链接。');
+      return;
+    }
+
+    // Flutter Web doesn't ship webview_windows. Hand the URL off to the
+    // browser tab system instead — same UX as native 'open in browser'.
+    if (kIsWeb) {
+      final uri = widget.request.uri!;
+      final launched = await launchUrl(uri, mode: LaunchMode.externalApplication);
+      if (!mounted) return;
+      if (launched) {
+        // Pop back to the timeline so the user sees their previous context;
+        // the article will load in a separate tab.
+        Navigator.of(context).pop();
+      } else {
+        _setFailure('无法打开原文链接：$uri');
+      }
       return;
     }
 
