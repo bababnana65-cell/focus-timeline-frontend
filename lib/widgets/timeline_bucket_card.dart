@@ -256,8 +256,15 @@ class _TimelineBucketCardState extends State<TimelineBucketCard> {
                                   child: Text(
                                     bucket.entries.isEmpty
                                         ? '点击展开查看该节点的动态。'
-                                        : bucket.entries.first.summary,
-                                    maxLines: 1,
+                                        // Headline above is `summary`. Show the
+                                        // longer `detail` field beneath so the
+                                        // collapsed card actually adds info —
+                                        // fall back to summary only if detail
+                                        // is empty.
+                                        : (bucket.entries.first.detail.isNotEmpty
+                                            ? bucket.entries.first.detail
+                                            : bucket.entries.first.summary),
+                                    maxLines: 2,
                                     overflow: TextOverflow.ellipsis,
                                     style: Theme.of(context)
                                         .textTheme
